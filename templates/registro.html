@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/registro.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluir SweetAlert -->
+</head>
+<body>
+    <div class="container">
+        <div class="left-section"></div>
+        <div class="right-section">
+            <h1>¡Hola! Regístrate para comenzar</h1>
+            <form id="registration-form" action="{% url 'registro' %}" method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <input type="text" name="first_name" placeholder="Nombre" required>
+                    <input type="text" name="last_name" placeholder="Apellido" required>
+                </div>
+                <div class="form-row">
+                    <input type="email" name="email" placeholder="Correo" required>
+                    <input type="text" name="empresa" placeholder="Empresa" required>
+                </div>
+                <div class="form-row">
+                    <input type="password" name="password1" placeholder="Contraseña" required>
+                    <input type="password" name="password2" placeholder="Repetir contraseña" required>
+                </div>
+                <div class="terms">
+                    <input type="checkbox" id="terms" name="terms" required>
+
+                    <label for="terms">Acepta los <a href="#">Términos y Condiciones</a> para crear tu cuenta</label>
+                </div>
+                <button type="submit">Registrarme</button>
+            </form>
+            <div class="social-login">
+                <button class="google">Continúa con Google</button>
+                <button class="apple">Continúa con Apple</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('registration-form').addEventListener('submit', function(event) {
+                const termsCheckbox = document.getElementById('terms');
+
+                if (!termsCheckbox.checked) {
+                    event.preventDefault();  // Evitar el envío del formulario
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '¡Atención!',
+                        text: 'Debes aceptar los términos y condiciones para continuar.',
+                    });
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>

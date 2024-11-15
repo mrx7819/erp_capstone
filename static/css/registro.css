@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500; /* Semi-bold para todo el texto */
+}
+
+body {
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left-section {
+    flex: 1;
+    background-image: url('/static/images/registro_img.jpg'); /* Ruta relativa al directorio estático */
+    background-size: cover;
+    background-position: center;
+}
+
+.right-section {
+    flex: 1;
+    background-color: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 40px; /* Aumenta la distancia entre el título y los elementos del registro */
+    text-align: center; /* Centrar el título */
+    font-weight: 600; /* Semi-bold solo para el título */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px; /* Aumenta la distancia entre los inputs */
+}
+
+input, select {
+    width: 48%;
+    padding: 15px;
+    margin-bottom: 20px; /* Más margen entre los elementos */
+    background-color: #333;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500; /* Semi-bold para los inputs */
+}
+
+input[type="checkbox"] {
+    width: auto;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500; /* Semi-bold para los botones */
+    cursor: pointer;
+    margin-top: 20px; /* Más espacio entre el último input y el botón */
+}
+
+button:hover {
+    background-color: #777;
+}
+
+.terms {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px; /* Aumenta la distancia entre términos y el botón */
+}
+
+.terms label {
+    margin-left: 10px;
+}
+
+.terms a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.social-login {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px; /* Más espacio encima de los botones sociales */
+}
+
+.social-login button {
+    width: 48%;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500; /* Semi-bold para botones sociales */
+    cursor: pointer;
+}
+
+.social-login button.google {
+    background-color: #DB4437;
+}
+
+.social-login button.apple {
+    background-color: #000;
+}
+
+.social-login button:hover {
+    opacity: 0.8;
+}

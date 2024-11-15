@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500; /* Semi-bold para todo el texto */
+}
+
+body {
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left-section {
+    flex: 1;
+    background-image: url('/static/images/login_img.jpg'); /* Ruta relativa al directorio estático */
+    background-size: cover;
+    background-position: center;
+}
+
+.right-section {
+    flex: 1;
+    background-color: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 40px; /* Más separación entre el título y el formulario */
+    text-align: center;
+    font-weight: 600; /* Semi-bold para el título */
+}
+
+form input[type="email"], form input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    margin: 20px 0; 
+    background-color: #333;
+    border: 1px solid #444; /* Añadir borde */
+    border-radius: 8px;
+    color: white;
+    font-weight: 500; 
+    font-size: 16px; /* Aumentar el tamaño de la fuente */
+}
+
+form input::placeholder {
+    color: #bbb; /* Color del placeholder */
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 20px; 
+}
+
+button:hover {
+    background-color: #777;
+}
+
+
+a {
+    color: white; /* Cambia los enlaces a blanco */
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: 0.8; /* Efecto hover para los enlaces */
+}
+
+.forgot-password, .create-account {
+    text-align: center;
+    margin-top: 20px; /* Mayor separación vertical */
+}
+
+.custom-input {
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+}

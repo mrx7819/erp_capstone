@@ -1,0 +1,113 @@
+{% extends '../index_master.html' %}
+{% load static %}
+<link href="{% static '/FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+{% block content %}
+<div class="right_col" role="main">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Modificar Cliente</h1>
+        
+        <form class="modificarCliente-form" id="modificarClienteForm" action="/modificarCliente/{{ cliente.id }}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="search">Buscar Cliente</label>
+                <input type="text" class="form-control" id="search" placeholder="Buscar por Id o nombre" onkeyup="filterClients()">
+            </div>
+            <div class="form-group">
+                <label for="cliente">Cliente</label>
+                <select class="form-control" id="id" name="id">
+                {% for c in clientes %}
+                   <option value="{{ c.id }}"{% if c.id == cliente.id %} selected {% endif %}>{{ c.id }} - {{ c.nombre }} </option>
+                {% endfor %} 
+                </select>
+            </div>
+
+            <!-- Nueva sección con filas -->
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre" value="{{cliente.nombre}}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Ingrese el apellido" value="{{cliente.apellido}}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ingrese la dirección" value="{{cliente.direccion}}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono" value="{{cliente.telefono}}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese el email" value="{{cliente.email}}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{cliente.fecha_nacimiento}}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="genero">Género</label>
+                    <select class="form-control" id="genero" name="genero">
+                        <option value="M" {% if cliente.genero == 'M' %}selected{% endif %}>Masculino</option>
+                        <option value="F" {% if cliente.genero == 'F' %}selected{% endif %}>Femenino</option>
+                        <option value="O" {% if cliente.genero == 'O' %}selected{% endif %}>Otro</option>
+                    </select>
+                </div>
+            </div>
+            <a href="{% url 'listarCliente' %}" class="btn btn-primary">
+                <i class="fa fa-arrow-left"></i> Volver
+            </a>
+            <button type="button" class="btn btn-warning" style="color: azure;" onclick="confirmModification()"><i class="fa fa-refresh"></i> Modificar Cliente</button>
+            
+        </form>
+    </div>
+</div>
+
+<script>
+function filterClients() {
+    var input, filter, select, options, i, txtValue;
+    input = document.getElementById('search');
+    filter = input.value.toUpperCase();
+    select = document.getElementById('id');
+    options = select.getElementsByTagName('option');
+    
+    for (i = 0; i < options.length; i++) {
+        txtValue = options[i].textContent || options[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            options[i].style.display = "";
+        } else {
+            options[i].style.display = "none";
+        }
+    }
+}
+
+function confirmModification() {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esta acción.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, Modificar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('modificarClienteForm').submit();
+        }
+    });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+.btn-logout {
+    background-color: white; /* Color de fondo blanco */
+    border: none;
+    color: rgb(0, 0, 0); /* Color del texto */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+.btn-logout:hover {
+    background-color: #f0f0f0; /* Color de fondo al pasar el mouse */
+}
+
+.sidebar-footer-white {
+    display: flex; /* Usar flexbox para alinear el contenido */
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+    padding: 10px; /* Espaciado interno opcional */
+    border-top: 1px solid #ccc; /* Borde superior opcional */
+    background-color: white; /* Color de fondo blanco */
+}
+
+.sidebar-footer-35 {
+    background-color: #353535; /* Color de fondo blanco */   
+
+}
+.btn-logout-35 {
+    background-color: #353535; /* Color de fondo blanco */
+    border: none;
+    color: rgb(255, 255, 255); /* Color del texto */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+.btn-logout-35:hover {
+    background-color: #535353; /* Color de fondo al pasar el mouse */
+}

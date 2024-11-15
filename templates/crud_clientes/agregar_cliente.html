@@ -1,0 +1,154 @@
+{% extends '../index_master.html' %}
+{% load static %}
+<link href="{% static '/FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+{% block content %}
+<div class="right_col" role="main">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Agregar Cliente</h1>
+        
+        <div class="form-container">  <!-- Contenedor con sombra -->
+            <form class="agregarCliente-form" action="{% url 'agregarCliente' %}" method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- RUT Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="rut">RUT <span class="text-muted">(Ej: 123456789)</span></label>
+                        <input type="text" class="form-control" id="rut" name="rut" 
+                               value="{{ form.rut.value|default:'' }}" placeholder="Ingrese el RUT" maxlength="10">
+                        {% if form.rut.errors %}
+                            <div class="text-danger">{{ form.rut.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Nombre Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                               value="{{ form.nombre.value|default:'' }}" placeholder="Ingrese el nombre">
+                        {% if form.nombre.errors %}
+                            <div class="text-danger">{{ form.nombre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Apellido Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="apellido">Apellido</label>
+                        <input type="text" class="form-control" id="apellido" name="apellido" 
+                               value="{{ form.apellido.value|default:'' }}" placeholder="Ingrese el apellido">
+                        {% if form.apellido.errors %}
+                            <div class="text-danger">{{ form.apellido.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Dirección Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="direccion">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" 
+                               value="{{ form.direccion.value|default:'' }}" placeholder="Ingrese la dirección">
+                        {% if form.direccion.errors %}
+                            <div class="text-danger">{{ form.direccion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Teléfono Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="telefono">Teléfono <span class="text-muted">(Ej: 912345678)</span></label>
+                        <input type="text" class="form-control" id="telefono" name="telefono" 
+                               value="{{ form.telefono.value|default:'' }}" placeholder="Ingrese el teléfono">
+                        {% if form.telefono.errors %}
+                            <div class="text-danger">{{ form.telefono.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Email Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ form.email.value|default:'' }}" placeholder="Ingrese el email">
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Fecha de Nacimiento Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" 
+                               value="{{ form.fecha_nacimiento.value|default:'' }}">
+                        {% if form.fecha_nacimiento.errors %}
+                            <div class="text-danger">{{ form.fecha_nacimiento.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Género Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="genero">Género</label>
+                        <select class="form-control" id="genero" name="genero">
+                            <option value="M" {% if form.genero.value == "M" %}selected{% endif %}>Masculino</option>
+                            <option value="F" {% if form.genero.value == "F" %}selected{% endif %}>Femenino</option>
+                            <option value="O" {% if form.genero.value == "O" %}selected{% endif %}>Otro</option>
+                        </select>
+                        {% if form.genero.errors %}
+                            <div class="text-danger">{{ form.genero.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Formulario de Interacción del Cliente -->
+                <h2 class="text-center mt-4">Agregar Interacción del Cliente</h2>
+                <div class="row">
+                    <!-- Fecha de Interacción Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="fecha_interaccion">Fecha de Interacción</label>
+                        <input type="date" class="form-control" id="fecha_interaccion" name="fecha_interaccion" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Descripción Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="descripcion">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese la descripción" required></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Tipo de Interacción Field -->
+                    <div class="form-group col-md-12"> <!-- Cambiado a col-md-12 para diseño vertical -->
+                        <label for="tipo_interaccion">Tipo de Interacción</label>
+                        <select class="form-control" id="tipo_interaccion" name="tipo_interaccion" required>
+                            <option value="Llamada">Llamada</option>
+                            <option value="Email">Email</option>
+                            <option value="Reunión">Reunión</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'listarCliente' %}" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success"><i class="fa fa-user-plus"></i> Agregar Cliente </button>             
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

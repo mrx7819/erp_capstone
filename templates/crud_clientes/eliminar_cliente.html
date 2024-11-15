@@ -1,0 +1,75 @@
+{% extends '../index_master.html' %}
+
+{% block content %}
+
+<div class="right_col" role="main">
+    <!-- top tiles -->
+    <h3 class="text-center"><strong>¡Cuidado!</strong> Estás a Punto de Eliminar un Proveedor</h3>
+    <form class="eliminarCliente-form" id="eliminarClienteForm" action="{% url 'eliminarCliente' cliente.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="search">Buscar Cliente</label>
+            <input type="text" class="form-control" id="search" placeholder="Buscar por RUT o nombre" onkeyup="filterClients()">
+        </div>
+        <div class="form-group">
+            <label for="cliente">Cliente</label>
+            <select class="form-control" id="id" name="id">
+                {% for c in clientes %}
+                    <option value="{{ c.id }}"{% if c.id == cliente.id %} selected {% endif %}>{{ c.id }} - {{ c.nombre }}</option>
+                {% endfor %} 
+            </select>
+        </div>
+        <a href="{% url 'listarCliente' %}" class="btn btn-primary">
+            <i class="fa fa-arrow-left"></i> Volver
+        </a>
+        <!-- Ejemplo de botón de eliminar en listar_cliente.html -->
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+            <i class="fa fa-trash"></i> Eliminar
+        </button>
+    </form>
+</div>
+
+<script>
+function filterClients() {
+    var input, filter, select, options, i, txtValue;
+    input = document.getElementById('search');
+    filter = input.value.toUpperCase();
+    select = document.getElementById('id');
+    options = select.getElementsByTagName('option');
+    
+    for (i = 0; i < options.length; i++) {
+        txtValue = options[i].textContent || options[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            options[i].style.display = "";
+        } else {
+            options[i].style.display = "none";
+        }
+    }
+}
+
+function confirmDelete() {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esta acción.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var select = document.getElementById('id');
+            var selectedId = select.options[select.selectedIndex].value; // Obtiene el ID seleccionado
+            if (selectedId) { // Verifica que el ID no esté vacío
+                document.getElementById('eliminarClienteForm').action = '/eliminarCliente/' + selectedId ; // Actualiza la acción del formulario
+                document.getElementById('eliminarClienteForm').submit(); // Envía el formulario
+            } else {
+                Swal.fire('Error', 'Por favor selecciona un cliente válido.', 'error');
+            }
+        }
+    });
+}
+</script>
+
+{% endblock %}

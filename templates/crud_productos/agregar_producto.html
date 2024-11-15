@@ -1,0 +1,122 @@
+{% extends '../index_master.html' %}
+{% load static %}
+<link href="{% static 'FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+{% block content %}
+<div class="right_col" role="main">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Agregar Producto</h1>
+        
+        <div class="form-container">  <!-- Contenedor con sombra -->
+            <form class="agregarProducto-form" action="{% url 'agregarProducto' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- SKU Field -->
+                    <div class="form-group col-md-12">
+                        <label for="sku">SKU</label>
+                        <input type="text" class="form-control" id="sku" name="sku" 
+                               value="{{ form.sku.value|default:'' }}" placeholder="Ingrese el SKU" required maxlength="50">
+                        {% if form.sku.errors %}
+                            <div class="text-danger">{{ form.sku.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Nombre Field -->
+                    <div class="form-group col-md-12">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                               value="{{ form.nombre.value|default:'' }}" placeholder="Ingrese el nombre del producto" required>
+                        {% if form.nombre.errors %}
+                            <div class="text-danger">{{ form.nombre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Descripción Field -->
+                    <div class="form-group col-md-12">
+                        <label for="descripcion">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese la descripción">{{ form.descripcion.value|default:'' }}</textarea>
+                        {% if form.descripcion.errors %}
+                            <div class="text-danger">{{ form.descripcion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Categoría Field -->
+                    <div class="form-group col-md-12">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-control" id="categoria" name="categoria" required>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}" {% if form.categoria.value == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.categoria.errors %}
+                            <div class="text-danger">{{ form.categoria.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Proveedor Field -->
+                    <div class="form-group col-md-12">
+                        <label for="proveedor">Proveedor</label>
+                        <select class="form-control" id="proveedor" name="proveedor">
+                            {% for proveedor in proveedores %}
+                                <option value="{{ proveedor.id }}" {% if form.proveedor.value == proveedor.id %}selected{% endif %}>{{ proveedor.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.proveedor.errors %}
+                            <div class="text-danger">{{ form.proveedor.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Precio Field -->
+                    <div class="form-group col-md-6">
+                        <label for="precio">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" 
+                               value="{{ form.precio.value|default:'' }}" placeholder="Ingrese el precio" required>
+                        {% if form.precio.errors %}
+                            <div class="text-danger">{{ form.precio.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Cantidad Field -->
+                    <div class="form-group col-md-6">
+                        <label for="cantidad">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                               value="{{ form.cantidad.value|default:0 }}" placeholder="Ingrese la cantidad" required>
+                        {% if form.cantidad.errors %}
+                            <div class="text-danger">{{ form.cantidad.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Imagen Field -->
+                    <div class="form-group col-md-12">
+                        <label for="imagen">Imagen</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen">
+                        {% if form.img.errors %}
+                            <div class="text-danger">{{ form.img.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'listarProducto' %}" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Agregar Producto </button>             
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
