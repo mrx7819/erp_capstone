@@ -1,36 +1,29 @@
 {% extends '../index_master.html' %}
 {% load static %}
 <link href="{% static 'FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+
 {% block content %}
 <div class="right_col" role="main">
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Agregar Producto</h1>
+        <h1 class="text-center mb-4 text-dark">Agregar Producto</h1>
         
-        <div class="form-container">  <!-- Contenedor con sombra -->
+        <div class="form-container p-4 shadow-lg bg-white rounded">
             <form class="agregarProducto-form" action="{% url 'agregarProducto' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 
                 <div class="row">
                     <!-- SKU Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="sku">SKU</label>
                         <input type="text" class="form-control" id="sku" name="sku" 
-                               value="{{ form.sku.value|default:'' }}" placeholder="Ingrese el SKU" required maxlength="50">
-                        {% if form.sku.errors %}
-                            <div class="text-danger">{{ form.sku.errors.0 }}</div>
-                        {% endif %}
+                               placeholder="Ingrese el SKU" maxlength="50" required>
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Nombre Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="nombre">Nombre</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" 
-                               value="{{ form.nombre.value|default:'' }}" placeholder="Ingrese el nombre del producto" required>
-                        {% if form.nombre.errors %}
-                            <div class="text-danger">{{ form.nombre.errors.0 }}</div>
-                        {% endif %}
+                               placeholder="Ingrese el nombre del producto" required>
                     </div>
                 </div>
 
@@ -38,61 +31,80 @@
                     <!-- Descripción Field -->
                     <div class="form-group col-md-12">
                         <label for="descripcion">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese la descripción">{{ form.descripcion.value|default:'' }}</textarea>
-                        {% if form.descripcion.errors %}
-                            <div class="text-danger">{{ form.descripcion.errors.0 }}</div>
-                        {% endif %}
+                        <textarea class="form-control" id="descripcion" name="descripcion" 
+                                  placeholder="Ingrese la descripción"></textarea>
                     </div>
                 </div>
 
                 <div class="row">
                     <!-- Categoría Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="categoria">Categoría</label>
                         <select class="form-control" id="categoria" name="categoria" required>
                             {% for categoria in categorias %}
-                                <option value="{{ categoria.id }}" {% if form.categoria.value == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
                             {% endfor %}
                         </select>
-                        {% if form.categoria.errors %}
-                            <div class="text-danger">{{ form.categoria.errors.0 }}</div>
-                        {% endif %}
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Proveedor Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="proveedor">Proveedor</label>
-                        <select class="form-control" id="proveedor" name="proveedor">
+                        <select class="form-control" id="proveedor" name="proveedor" required>
                             {% for proveedor in proveedores %}
-                                <option value="{{ proveedor.id }}" {% if form.proveedor.value == proveedor.id %}selected{% endif %}>{{ proveedor.nombre }}</option>
+                                <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
                             {% endfor %}
                         </select>
-                        {% if form.proveedor.errors %}
-                            <div class="text-danger">{{ form.proveedor.errors.0 }}</div>
-                        {% endif %}
                     </div>
                 </div>
 
                 <div class="row">
-                    <!-- Precio Field -->
-                    <div class="form-group col-md-6">
-                        <label for="precio">Precio</label>
-                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" 
-                               value="{{ form.precio.value|default:'' }}" placeholder="Ingrese el precio" required>
-                        {% if form.precio.errors %}
-                            <div class="text-danger">{{ form.precio.errors.0 }}</div>
-                        {% endif %}
+                    <!-- Precio de Compra -->
+                    <div class="form-group col-md-4">
+                        <label for="precio_compra">Precio de Compra</label>
+                        <input type="number" class="form-control" id="precio_compra" name="precio_compra" 
+                               step="0.01" placeholder="Ingrese el precio de compra" required>
                     </div>
-
+                
+                    <!-- Precio de Venta -->
+                    <div class="form-group col-md-4">
+                        <label for="precio_venta">Precio de Venta</label>
+                        <input type="number" class="form-control" id="precio_venta" name="precio_venta" 
+                               step="0.01" placeholder="Ingrese el precio de venta" required>
+                    </div>
+                
+                    <!-- Porcentaje de Ganancias -->
+                    <div class="form-group col-md-4">
+                        <label for="porc_ganancias">Porcentaje de Ganancia (%)</label>
+                        <input type="text" class="form-control" id="porc_ganancias" name="porc_ganancias" 
+                               placeholder="Porcentaje de ganancia" readonly>
+                    </div>
+                </div>
+                
+                <div class="row">
                     <!-- Cantidad Field -->
                     <div class="form-group col-md-6">
                         <label for="cantidad">Cantidad</label>
                         <input type="number" class="form-control" id="cantidad" name="cantidad" 
-                               value="{{ form.cantidad.value|default:0 }}" placeholder="Ingrese la cantidad" required>
-                        {% if form.cantidad.errors %}
-                            <div class="text-danger">{{ form.cantidad.errors.0 }}</div>
+                               placeholder="Ingrese la cantidad disponible" required>
+                    </div>
+
+                    <!-- Bodega Field -->
+                    <div class="form-group col-md-6">
+                        <label for="bodega">Bodega</label>
+                        {% if bodegas %}
+                        <select class="form-control" id="bodega" name="bodega" required>
+                            {% for bodega in bodegas %}
+                                <option value="{{ bodega.id }}">{{ bodega.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <p class="text-danger">No hay bodegas disponibles.</p>
+                        <p>¿Quieres agregar una bodega? 
+                            <a href="{% url 'agregarBodega' %}" class="btn btn-sm btn-outline-primary">
+                                Agregar una bodega
+                            </a>
+                        </p>
                         {% endif %}
                     </div>
                 </div>
@@ -101,22 +113,44 @@
                     <!-- Imagen Field -->
                     <div class="form-group col-md-12">
                         <label for="imagen">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen">
-                        {% if form.img.errors %}
-                            <div class="text-danger">{{ form.img.errors.0 }}</div>
-                        {% endif %}
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="text-center mt-4">
-                    <a href="{% url 'listarProducto' %}" class="btn btn-primary">
+                    <a href="{% url 'listarProducto' %}" class="btn btn-outline-secondary">
                         <i class="fa fa-arrow-left"></i> Volver
                     </a>
-                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Agregar Producto </button>             
+                    <button type="submit" class="btn btn-success" {% if not bodegas %}disabled{% endif %}>
+                        <i class="fa fa-plus"></i> Agregar Producto
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const precioCompraInput = document.getElementById('precio_compra');
+        const precioVentaInput = document.getElementById('precio_venta');
+        const porcGananciasInput = document.getElementById('porc_ganancias');
+    
+        function calcularMargenGanancia() {
+            const precioCompra = parseFloat(precioCompraInput.value);
+            const precioVenta = parseFloat(precioVentaInput.value);
+    
+            if (!isNaN(precioCompra) && !isNaN(precioVenta) && precioCompra > 0) {
+                const margen = ((precioVenta - precioCompra) / precioCompra) * 100;
+                porcGananciasInput.value = margen.toFixed(2); // Mostrar margen con 2 decimales
+            } else {
+                porcGananciasInput.value = ''; // Vaciar si no hay valores válidos
+            }
+        }
+    
+        precioCompraInput.addEventListener('input', calcularMargenGanancia);
+        precioVentaInput.addEventListener('input', calcularMargenGanancia);
+    });
+</script>
 {% endblock %}

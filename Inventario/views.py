@@ -1,6 +1,12 @@
+from pyexpat.errors import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import *
+from Inventario.models import Categoria, CategoriaGiro, Producto, Bodega
+from Proveedor.models import Proveedor
+from Ubicacion.models import *
+from django.contrib import messages  # Añadir esta importación
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver    
 from django.http import HttpResponse
 # Create your views here.
 
@@ -114,62 +120,83 @@ def agregarProducto(request):
             request.POST.get('sku') and 
             request.POST.get('nombre') and 
             request.POST.get('descripcion') and 
-            request.POST.get('precio') and 
+            request.POST.get('precio_compra') and
+            request.POST.get('precio_venta') and
+            request.POST.get('porc_ganancias') and
             request.POST.get('cantidad') and 
             request.POST.get('categoria') and
             request.POST.get('proveedor') and
+            request.POST.get('bodega') and
             request.FILES.get('imagen')
         ):
             producto = Producto()
             producto.sku = request.POST.get('sku')
             producto.nombre = request.POST.get('nombre')
             producto.descripcion = request.POST.get('descripcion')
-            producto.precio = request.POST.get('precio')
+            producto.precio_compra = request.POST.get('precio_compra')
+            producto.precio_venta = request.POST.get('precio_venta')
+            producto.porc_ganancias = request.POST.get('porc_ganancias')
             producto.cantidad = request.POST.get('cantidad')
             producto.categoria_id = request.POST.get('categoria')
             producto.proveedor_id = request.POST.get('proveedor')
+            producto.bodega_id = request.POST.get('bodega')
             producto.img = request.FILES.get('imagen')
             producto.user = request.user
             producto.save()
             return redirect('listarProducto')
         else:
             # Si no se completaron todos los campos, podrías mostrar un mensaje de error
-            return render(request, 'crud_productos/agregar_producto.html')
+            return render(request, 'crud_productos/agregar_producto.html', {'error': 'Faltan campos obligatorios'})
     else:
-        # Pasamos las categorías y proveedores disponibles al formulario para que el usuario pueda elegir
-        categorias = Categoria.objects.all()
-        proveedores = Proveedor.objects.all()  # Asumiendo que tienes un modelo Proveedor
+        # Pasamos las categorías, proveedores, y bodegas disponibles al formulario
+        categorias = Categoria.objects.filter(user=request.user)
+        proveedores = Proveedor.objects.filter(user=request.user)  # Asumiendo que tienes un modelo Proveedor
+        bodegas = Bodega.objects.filter(user=request.user)  # Asumiendo que tienes un modelo Bodega
         return render(request, 'crud_productos/agregar_producto.html', {
             'categorias': categorias,
-            'proveedores': proveedores
+            'proveedores': proveedores,
+            'bodegas': bodegas
         })
+
 
 
 @login_required
 def modificarProducto(request, idProducto):
     try:
         if request.method == 'POST':
-            # Imprimir los datos enviados en el formulario
-            print("Datos POST:", request.POST)
-            
-            if request.POST.get('id') and request.POST.get('categoria') and request.POST.get('sku') and request.POST.get('nombre') and request.POST.get('descripcion') and request.POST.get('proveedor') and request.POST.get('precio') and request.POST.get('cantidad') and request.FILES.get('imagen'):
-
+            if (
+                request.POST.get('id') and 
+                request.POST.get('categoria') and 
+                request.POST.get('sku') and 
+                request.POST.get('nombre') and 
+                request.POST.get('descripcion') and 
+                request.POST.get('proveedor') and 
+                request.POST.get('precio_compra') and 
+                request.POST.get('precio_venta') and 
+                request.POST.get('porc_ganancias') and 
+                request.POST.get('cantidad') and 
+                request.POST.get('bodega') and 
+                request.FILES.get('imagen')
+            ):
+                # Recuperamos el producto original antes de actualizarlo
                 producto_id_old = request.POST.get('id')
                 producto_old = Producto.objects.get(id=producto_id_old)
 
+                # Creamos una nueva instancia del producto con los datos actualizados
                 producto = Producto()
                 producto.id = request.POST.get('id')
                 producto.categoria_id = request.POST.get('categoria')
-
                 producto.sku = request.POST.get('sku')
                 producto.nombre = request.POST.get('nombre')
                 producto.descripcion = request.POST.get('descripcion')
                 producto.proveedor_id = request.POST.get('proveedor')
-                producto.precio = request.POST.get('precio')
+                producto.precio_compra = request.POST.get('precio_compra')
+                producto.precio_venta = request.POST.get('precio_venta')
+                producto.porc_ganancias = request.POST.get('porc_ganancias')
                 producto.cantidad = request.POST.get('cantidad')
-
+                producto.bodega_id = request.POST.get('bodega')
                 producto.img = request.FILES.get('imagen')
-                producto.fecha_creacion = producto_old.fecha_creacion
+                producto.fecha_creacion = producto_old.fecha_creacion  # Mantenemos la fecha original
                 producto.user = request.user
                 producto.save()
                 return redirect('listarProducto')
@@ -179,26 +206,49 @@ def modificarProducto(request, idProducto):
                 producto = Producto.objects.get(id=idProducto)
                 categorias = Categoria.objects.all()
                 proveedores = Proveedor.objects.all()
-                datos = {'productos': productos, 'producto': producto,'categorias' : categorias, 'proveedores' : proveedores}
+                bodegas = Bodega.objects.all()
+                datos = {
+                    'productos': productos,
+                    'producto': producto,
+                    'categorias': categorias,
+                    'proveedores': proveedores,
+                    'bodegas': bodegas,
+                    'error': 'Faltan campos obligatorios',
+                }
                 return render(request, 'crud_productos/modificar_producto.html', datos)
 
         else:
-            # Si es una solicitud GET, mostrar el formulario con los datos de la categoría
+            # Si es una solicitud GET, mostrar el formulario con los datos del producto
             productos = Producto.objects.all()
             producto = Producto.objects.get(id=idProducto)
             categorias = Categoria.objects.all()
             proveedores = Proveedor.objects.all()
-            datos = {'productos': productos, 'producto': producto,'categorias' : categorias, 'proveedores' : proveedores}
+            bodegas = Bodega.objects.all()
+            datos = {
+                'productos': productos,
+                'producto': producto,
+                'categorias': categorias,
+                'proveedores': proveedores,
+                'bodegas': bodegas,
+            }
             return render(request, 'crud_productos/modificar_producto.html', datos)
 
     except Producto.DoesNotExist:
-        # En caso de que no exista la categoría, manejar el error y devolver la vista con categoría nula
+        # En caso de que no exista el producto, manejar el error y devolver la vista con producto nulo
         productos = Producto.objects.all()
         categorias = Categoria.objects.all()
         proveedores = Proveedor.objects.all()
-        producto = None
-        datos = {'productos': productos, 'producto': producto,'categorias' : categorias, 'proveedores' : proveedores}
+        bodegas = Bodega.objects.all()
+        datos = {
+            'productos': productos,
+            'producto': None,
+            'categorias': categorias,
+            'proveedores': proveedores,
+            'bodegas': bodegas,
+            'error': 'El producto solicitado no existe.',
+        }
         return render(request, 'crud_productos/modificar_producto.html', datos)
+
 
 
 
@@ -243,39 +293,42 @@ def agregarBodega(request):
         if (
             request.POST.get('nombre') and
             request.POST.get('direccion') and
-            request.POST.get('producto') and
-            request.POST.get('cantidad') and
+            request.POST.get('capacidad') and
             request.POST.get('comuna') and
             request.POST.get('provincia') and
             request.POST.get('region')
         ):
-            bodega = Bodega()
-            bodega.nombre = request.POST.get('nombre')
-            bodega.direccion = request.POST.get('direccion')
-            bodega.producto_id = request.POST.get('producto')
-            bodega.cantidad = request.POST.get('cantidad')
-            bodega.comuna_id = request.POST.get('comuna')
-            bodega.provincia_id = request.POST.get('provincia')
-            bodega.region_id = request.POST.get('region')
-            bodega.user = request.user
-            bodega.save()
-            return redirect('listarBodega')
+            try:
+                bodega = Bodega()
+                bodega.nombre = request.POST.get('nombre')
+                bodega.direccion = request.POST.get('direccion')
+                bodega.capacidad = int(request.POST.get('capacidad'))
+                bodega.comuna_id = request.POST.get('comuna')
+                bodega.provincia_id = request.POST.get('provincia')
+                bodega.region_id = request.POST.get('region')
+                bodega.user = request.user
+                bodega.cantidad_art = 0  # Inicializamos en 0 ya que es una bodega nueva
+                bodega.save()
+                messages.success(request, 'Bodega creada exitosamente.')
+                return redirect('listarBodega')
+            except ValueError:
+                messages.error(request, 'Por favor, ingrese valores válidos.')
+            except Exception as e:
+                messages.error(request, f'Error al crear la bodega: {str(e)}')
+            return render(request, 'crud_bodegas/agregar_bodega.html')
         else:
-            # Si no se completaron todos los campos, mostrar un error
+            messages.error(request, 'Por favor complete todos los campos requeridos.')
             return render(request, 'crud_bodegas/agregar_bodega.html')
     else:
-        # Pasamos los productos, comunas y regiones disponibles al formulario
-        productos = Producto.objects.all()
+        # Pasamos las comunas, provincias y regiones disponibles al formulario
         comunas = Comuna.objects.all()
         provincias = Provincia.objects.all()
         regiones = Region.objects.all()
         return render(request, 'crud_bodegas/agregar_bodega.html', {
-            'productos': productos,
             'comunas': comunas,
             'regiones': regiones,
             'provincias': provincias,
         })
-
 
 @login_required
 def modificarBodega(request, idBodega):
@@ -380,3 +433,4 @@ def eliminarBodega(request, idBodega):
         return render(request, 'crud_bodegas/eliminar_bodega.html', {
             'bodegas': bodegas,
         })
+

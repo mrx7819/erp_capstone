@@ -44,31 +44,30 @@ class Bodega(models.Model):
         db_table = "bodega"
 
     def calcular_cantidad_articulos(self):
-        # Calcula la cantidad total de artículos en esta bodega sumando la cantidad de cada producto relacionado.
-        
-        total_articulos = self.productos.aggregate(total=models.Sum('cantidad'))['total']
-        return total_articulos if total_articulos is not None else 0
+        # Como ya no tenemos relación directa con productos, 
+        # simplemente retornamos el valor de cantidad_art
+        return self.cantidad_art if self.cantidad_art is not None else 0
 
 
-    class Producto(models.Model):
-        user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='productos', default=0)  # Agregar este campo
-        categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos', default=0)
-        sku = models.CharField(max_length=50, unique=True)  # Código único para cada producto
-        nombre = models.CharField(max_length=100)
-        descripcion = models.TextField(blank=True, null=True)
-        proveedor = models.ForeignKey('Proveedor.Proveedor', on_delete=models.SET_NULL, null=True, related_name='productos')  # Usar cadena para evitar importación circular
-        precio_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-        precio_venta = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-        porc_ganancias = models.DecimalField(max_digits=10, decimal_places=2)
-        cantidad = models.IntegerField(blank=False, null=False, default=0)
-        fecha_creacion = models.DateTimeField(default=timezone.now) 
-        bodega = models.ForeignKey('Bodega', on_delete=models.CASCADE, related_name='productos', default=0)
-        img = models.ImageField(blank=True, upload_to='static/images/productos/')
+class Producto(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='productos', default=0)  # Agregar este campo
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='productos', default=0)
+    sku = models.CharField(max_length=50, unique=True)  # Código único para cada producto
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    proveedor = models.ForeignKey('Proveedor.Proveedor', on_delete=models.SET_NULL, null=True, related_name='productos')  # Usar cadena para evitar importación circular
+    precio_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    precio_venta = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    porc_ganancias = models.DecimalField(max_digits=10, decimal_places=2)
+    cantidad = models.IntegerField(blank=False, null=False, default=0)
+    fecha_creacion = models.DateTimeField(default=timezone.now) 
+    bodega = models.ForeignKey('Bodega', on_delete=models.CASCADE)
+    img = models.ImageField(blank=True, upload_to='static/images/productos/')
 
-        def __str__(self):
+    def __str__(self):
             return f"{self.nombre} - {self.sku}"
 
-        class Meta:
+    class Meta:
             verbose_name = "Producto"
             verbose_name_plural = "Productos"
             db_table = "producto"

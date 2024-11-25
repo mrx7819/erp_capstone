@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -115,10 +116,10 @@ WSGI_APPLICATION = 'erp_pyme.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres_pyme',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'capstone-pyme.c7gago4iy9g8.us-east-2.rds.amazonaws.com',
+        'PASSWORD': 'capstonePyme321/',
+        'HOST': 'erp-pyme.postgres.database.azure.com',
         'PORT': '5432',
     }
 }

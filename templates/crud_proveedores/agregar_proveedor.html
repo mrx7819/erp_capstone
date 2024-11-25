@@ -107,9 +107,9 @@
                     <label for="giro">Giro</label>
                     <select class="form-control" id="giro" name="giro" required>
                         <option value="">Seleccione un giro</option>
-                        {% for giro in form.giro.field.queryset %}
-                            <option value="{{ giro.pk }}" {% if form.giro.value == giro.pk %}selected{% endif %}>
-                                {{ giro }}
+                        {% for giro in giros %}
+                            <option value="{{ giro.id }}" {% if giro.id == proveedor.giro.id %}selected{% endif %}>
+                                {{ giro.codigo }} - {{ giro.nombre }}
                             </option>
                         {% endfor %}
                     </select>
@@ -117,6 +117,8 @@
                         <div class="text-danger">{{ form.giro.errors.0 }}</div>
                     {% endif %}
                 </div>
+            </div>
+            
 
                 <!-- Logo Field -->
                 <div class="form-group col-md-6">

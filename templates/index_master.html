@@ -40,7 +40,8 @@
     </div>
     <div class="container body">
       <div class="main_container">
-        <div class="col-md-3 left_col">
+        <div class="col-md-3 left_col menu_fixed">
+
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
               <a href="{% url 'index' %}" class="site_title"><span>Panel de control</span></a>
@@ -69,7 +70,6 @@
                   <li>
                     <a href="{% url 'index' %}"><i class="fa fa-home"></i> Inicio</a> 
                   </li>
-                  <p class="section-title">Sección de Clientes y Ventas</p>
                   <li>
                     <a><i class="fa fa-people-group"></i> Clientes <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -82,13 +82,12 @@
                   <li>
                     <a><i class="fa fa-sack-dollar"></i> Ventas <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
-                      <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
-                      <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
+                      <li><a href="{% url 'listarVenta' %}"><i class="fa fa-eye"></i> Ver</a></li>
+                      <li><a href="{% url 'agregarVenta' %}"><i class="fa fa-plus"></i> Agregar</a></li>
+                      <li><a href="/modificarVenta/0"><i class="fa fa-refresh"></i> Modificar</a></li>
+                      <li><a href="/eliminarVenta/0"><i class="fa fa-trash"></i> Eliminar</a></li>
                     </ul>
                   </li>
-                  <p class="section-title">Sección de Abastecimiento</p>
                   <li>
                     <a><i class="fa fa-truck-field"></i> Proveedores <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -107,7 +106,6 @@
                       <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
                     </ul>
                   </li>
-                  <p class="section-title">Sección de Inventario</p>
                   <li>
                     <a><i class="fa fa-list"></i> Categorías <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -133,44 +131,6 @@
                       <li><a href="{% url 'agregarBodega' %}"><i class="fa fa-plus"></i> Agregar</a></li>
                       <li><a href="/modificarBodega/0"><i class="fa fa-refresh"></i> Modificar</a></li>
                       <li><a href="/eliminarBodega/0"><i class="fa fa-trash"></i> Eliminar</a></li>
-                    </ul>
-                  </li>
-                  <p class="section-title">Sección de RRHH y Finanzas</p>
-                  <li>
-                    <a><i class="fa fa-coins"></i> Finanzas <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
-                      <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
-                      <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <a><i class="fa fa-user-group"></i> Empleados <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
-                      <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
-                      <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
-                    </ul>
-                  </li>
-                  <p class="section-title">Sección de Reportes</p>
-                  <li>
-                    <a><i class="fa fa-newspaper"></i> Reportes <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
-                      <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
-                      <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <a><i class="fa fa-chart-simple"></i> Análisis <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
-                      <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
-                      <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
                     </ul>
                   </li>
                 </ul>

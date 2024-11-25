@@ -1,5 +1,126 @@
 {% extends '../index_master.html' %}
 {% load static %}
-<link href="{% static '/FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+<link href="{% static 'FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
+
 {% block content %}
+<div class="right_col" role="main">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4 text-dark">Modificar Venta</h1>
+        
+        <div class="form-container p-4 shadow-lg bg-white rounded">
+            <form action="{% if venta.id %}{% url 'modificarVenta' venta.id %}{% endif %}" method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="venta_id">ID Venta</label> 
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <i class="fa fa-id-badge"></i>
+                            </div>
+                            <select id="venta_id" name="id">
+                                {% for v in ventas %}
+                                    <option value="{{ v.id }}" {% if v.id == venta.id %} selected {% endif %}>{{ v.id }}</option>
+                                {% endfor %}
+                            </select>   
+                        </div> 
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Cliente -->
+                    <div class="form-group col-md-6">
+                        <label for="cliente">Cliente</label>
+                        <select class="form-control" id="cliente" name="cliente" required>
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}" {% if venta.cliente and cliente.id == venta.cliente.id %}selected{% endif %}>
+                                    {{ cliente.nombre }} {{ cliente.apellido }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Método de Pago -->
+                    <div class="form-group col-md-6">
+                        <label for="metodo_pago">Método de Pago</label>
+                        <select class="form-control" id="metodo_pago" name="metodo_pago" required>
+                            {% for key, value in metodo_pago_choices %}
+                                <option value="{{ key }}" {% if venta.metodo_pago == key %}selected{% endif %}>
+                                    {{ value }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Impuesto -->
+                    <div class="form-group col-md-4">
+                        <label for="impuesto">Impuesto</label>
+                        <input type="number" class="form-control" id="impuesto" name="impuesto" 
+                               value="{{ venta.impuesto }}" step="0.01" placeholder="Ingrese el impuesto">
+                    </div>
+
+                    <!-- Descuento -->
+                    <div class="form-group col-md-4">
+                        <label for="descuento">Descuento</label>
+                        <input type="number" class="form-control" id="descuento" name="descuento" 
+                               value="{{ venta.descuento }}" step="0.01" placeholder="Ingrese el descuento">
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="form-group col-md-4">
+                        <label for="estado">Estado</label>
+                        <select class="form-control" id="estado" name="estado" required>
+                            {% for key, value in estado_choices %}
+                                <option value="{{ key }}" {% if venta.estado == key %}selected{% endif %}>
+                                    {{ value }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Total Venta -->
+                    <div class="form-group col-md-12">
+                        <label for="total_venta">Total Venta</label>
+                        <input type="text" class="form-control" id="total_venta" name="total_venta" 
+                               value="{{ venta.total_venta }}" readonly>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'listarVenta' %}" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check-circle"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const impuestoInput = document.getElementById('impuesto');
+        const descuentoInput = document.getElementById('descuento');
+        const totalVentaInput = document.getElementById('total_venta');
+        
+        function calcularTotal() {
+            const impuesto = parseFloat(impuestoInput.value) || 0;
+            const descuento = parseFloat(descuentoInput.value) || 0;
+            const totalBase = parseFloat(totalVentaInput.dataset.base) || 0;
+
+            const total = totalBase + impuesto - descuento;
+            totalVentaInput.value = total.toFixed(2);
+        }
+
+        impuestoInput.addEventListener('input', calcularTotal);
+        descuentoInput.addEventListener('input', calcularTotal);
+    });
+</script>
 {% endblock %}

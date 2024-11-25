@@ -80,5 +80,3 @@ class InteraccionCliente(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["cliente", "fecha"], name="unique_cliente_fecha")
         ]
-
-

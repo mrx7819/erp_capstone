@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 from django.contrib import messages
 from .models import *
-from .forms import *
+from Proveedor.models import Giro, CategoriaGiro
+from Ubicacion.models import Region, Provincia, Comuna
 import json
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -65,79 +66,139 @@ def listarProveedor(request):
 @login_required
 def agregarProveedor(request):
     if request.method == 'POST':
-        form = ProveedorForm(request.POST, request.FILES)
-        if form.is_valid():
-            proveedor = form.save(commit=False)
+        if (
+            request.POST.get('rut') and 
+            request.POST.get('nombre') and 
+            request.POST.get('direccion') and 
+            request.POST.get('telefono') and 
+            request.POST.get('email') and 
+            request.POST.get('comuna') and
+            request.POST.get('provincia') and
+            request.POST.get('region') and
+            request.POST.get('giro') and
+            request.FILES.get('logo')
+        ):
+            proveedor = Proveedor()
+            proveedor.rut = request.POST.get('rut')
+            proveedor.nombre = request.POST.get('nombre')
+            proveedor.direccion = request.POST.get('direccion')
+            proveedor.telefono = request.POST.get('telefono')
+            proveedor.email = request.POST.get('email')
+            proveedor.comuna_id = request.POST.get('comuna')
+            proveedor.provincia_id = request.POST.get('provincia')
+            proveedor.region_id = request.POST.get('region')
+            proveedor.giro_id = request.POST.get('giro')
+            proveedor.logo = request.FILES.get('logo')
             proveedor.user = request.user
-            
-            # Asignar las instancias de Region, Provincia y Comuna
-            proveedor.region = form.cleaned_data['region']
-            proveedor.provincia = form.cleaned_data['provincia']
-            proveedor.comuna = form.cleaned_data['comuna']
             proveedor.save()
-
-            messages.success(request, 'Proveedor agregado exitosamente.')
             return redirect('listarProveedor')
         else:
-            messages.error(request, 'Por favor, corrige los errores en el formulario.')
-            print(form.errors)  # Para depuración
-            print(request.POST)  # Imprimir datos enviados para depuración
+            # Si no se completaron todos los campos, podrías mostrar un mensaje de error
+            return render(request, 'crud_proveedores/agregar_proveedor.html')
     else:
-        form = ProveedorForm()
+        # Pasamos las comunas, regiones y giros disponibles al formulario
+        comunas = Comuna.objects.all()
+        provincias = Provincia.objects.all()
+        regiones = Region.objects.all()
+        giros = Giro.objects.all()
+        return render(request, 'crud_proveedores/agregar_proveedor.html', {
+            'comunas': comunas,
+            'regiones': regiones,
+            'provincias': provincias,
+            'giros': giros
+        })
 
-    context = {
-        'form': form,
-        'regiones': Region.objects.all().order_by('nombre'),
-        'provincias': Provincia.objects.all().order_by('nombre'),
-        'comunas': Comuna.objects.select_related('provincia', 'provincia__region').order_by('provincia__region__nombre', 'nombre'),
-    }
-
-    return render(request, 'crud_proveedores/agregar_proveedor.html', context)
 
 
 @login_required
 def modificarProveedor(request, idProveedor):
-    # Si el ID es 0, inicializa un nuevo proveedor
-    if idProveedor == 0:
-        proveedor = Proveedor()  # Crea una nueva instancia de Proveedor
-        # Puedes inicializar otros campos si es necesario
-    else:
-        proveedor = get_object_or_404(Proveedor, id=idProveedor, user=request.user)
+    try:
+        if request.method == 'POST':
+            if (
+                request.POST.get('rut') and 
+                request.POST.get('nombre') and 
+                request.POST.get('direccion') and 
+                request.POST.get('telefono') and 
+                request.POST.get('email') and 
+                request.POST.get('comuna') and
+                request.POST.get('provincia') and
+                request.POST.get('region') and
+                request.POST.get('giro')
+            ):
+                proveedor_id_old = request.POST.get('id')
+                proveedor_old = Proveedor.objects.get(id=proveedor_id_old)
 
-    if request.method == 'POST':
-        if idProveedor == 0:
-            proveedor = Proveedor()  # Crea una nueva instancia si es un nuevo proveedor
+                proveedor = Proveedor()
+                proveedor.id = request.POST.get('id')
+                proveedor.rut = request.POST.get('rut')
+                proveedor.nombre = request.POST.get('nombre')
+                proveedor.direccion = request.POST.get('direccion')
+                proveedor.telefono = request.POST.get('telefono')
+                proveedor.email = request.POST.get('email')
+                proveedor.comuna_id = request.POST.get('comuna')
+                proveedor.provincia_id = request.POST.get('provincia')
+                proveedor.region_id = request.POST.get('region')
+                proveedor.giro_id = request.POST.get('giro')
+                proveedor.fecha_creacion = proveedor_old.fecha_creacion  # Conservamos la fecha original
+
+                if request.FILES.get('logo'):
+                    proveedor.logo = request.FILES.get('logo')  # Actualizamos el logo si es necesario
+
+                proveedor.user = request.user
+                proveedor.save()
+
+                messages.success(request, 'Proveedor modificado exitosamente.')
+                return redirect('listarProveedor')
+            else:
+                # Si faltan campos en el formulario, devolver el formulario con un error
+                comunas = Comuna.objects.all()
+                provincias = Provincia.objects.all()
+                regiones = Region.objects.all()
+                giros = Giro.objects.all()
+                proveedor = Proveedor.objects.get(id=idProveedor)
+                datos = {
+                    'proveedores': Proveedor.objects.all(),
+                    'proveedor': proveedor,
+                    'comunas': comunas,
+                    'provincias': provincias,
+                    'regiones': regiones,
+                    'giros': giros,
+                    'error': 'Faltan campos obligatorios'
+                }
+                return render(request, 'crud_proveedores/modificar_proveedor.html', datos)
+
         else:
-            # Actualizar los campos del proveedor existente
-            proveedor = get_object_or_404(Proveedor, id=idProveedor, user=request.user)
+            # Si es una solicitud GET, mostrar el formulario con los datos del proveedor
+            comunas = Comuna.objects.all()
+            provincias = Provincia.objects.all()
+            regiones = Region.objects.all()
+            giros = Giro.objects.all()
+            proveedor = Proveedor.objects.get(id=idProveedor)
+            datos = {
+                'proveedores': Proveedor.objects.all(),
+                'proveedor': proveedor,
+                'comunas': comunas,
+                'provincias': provincias,
+                'regiones': regiones,
+                'giros': giros
+            }
+            return render(request, 'crud_proveedores/modificar_proveedor.html', datos)
 
-        # Actualizar los campos del proveedor
-        proveedor.nombre = request.POST.get('nombre')
-        proveedor.rut = request.POST.get('rut')
-        proveedor.direccion = request.POST.get('direccion')
-        proveedor.telefono = request.POST.get('telefono')
-        proveedor.email = request.POST.get('email')
-        proveedor.logo = request.FILES.get('logo')  # Manejo del archivo correctamente
-
-        # Obtener las instancias de Comuna, Región y Provincia
-        comuna_id = request.POST.get('comuna')
-        region_id = request.POST.get('region')
-        provincia_id = request.POST.get('provincia')
-
-        # Asignar las instancias correspondientes
-        if comuna_id:
-            proveedor.comuna = get_object_or_404(Comuna, codigo_comuna=comuna_id)
-        if region_id:
-            proveedor.region = get_object_or_404(Region, codigo_region=region_id)
-        if provincia_id:
-            proveedor.provincia = get_object_or_404(Provincia, codigo_provincia=provincia_id)
-
-        proveedor.save()
-        messages.success(request, 'Proveedor guardado exitosamente.')  # Mensaje de éxito
-        return redirect('listarProveedor')
-    else:
-        proveedores = Proveedor.objects.filter(user=request.user)  # Filtrar por el usuario
-        datos = {'proveedores': proveedores, 'proveedor': proveedor}
+    except Proveedor.DoesNotExist:
+        # En caso de que no exista el proveedor, manejar el error y devolver la vista con proveedor nulo
+        comunas = Comuna.objects.all()
+        provincias = Provincia.objects.all()
+        regiones = Region.objects.all()
+        giros = Giro.objects.all()
+        datos = {
+            'proveedores': Proveedor.objects.all(),
+            'proveedor': None,
+            'comunas': comunas,
+            'provincias': provincias,
+            'regiones': regiones,
+            'giros': giros,
+            'error': 'El proveedor solicitado no existe.'
+        }
         return render(request, 'crud_proveedores/modificar_proveedor.html', datos)
 
 @login_required
@@ -168,19 +229,6 @@ def listarGiro(request):
     giros = Giro.objects.all()  # Si no hay un campo de usuario, puedes listar todos los giros
     return render(request, 'crud_giros/listar_giro.html', {'giros': giros})
 
-@login_required
-def agregarGiro(request):
-    if request.method == 'POST':
-        form = GiroForm(request.POST)  # No necesitas request.FILES si no hay archivos
-
-        if form.is_valid():
-            form.save()  # Guarda el giro en la base de datos
-            return redirect('listarGiro')  # Redirige a la lista de giros después de agregar
-
-    else:
-        form = GiroForm()  # Crea un nuevo formulario vacío
-
-    return render(request, 'crud_giros/agregar_giro.html', {'form': form})  # Asegúrate de que la plantilla sea correcta
 
 def buscar_proveedores(request):
     query = request.GET.get('query', '')

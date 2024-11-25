@@ -5,131 +5,151 @@
 {% block content %}
 <div class="right_col" role="main">
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Modificar Proveedor</h1>
+        <h1 class="text-center mb-4 text-dark">Modificar Proveedor</h1>
         
-        <form class="modificarProveedor-form" id="modificarProveedorForm" action="/modificarProveedor/{{ proveedor.id }}" method="post" enctype="multipart/form-data">
+        <form action="{% if proveedor.id %}{% url 'modificarProveedor' proveedor.id %}{% endif %}" method="POST" enctype="multipart/form-data" class="p-4 shadow-lg bg-white rounded">
             {% csrf_token %}
             
-
-            <div class="row">
-                <!-- RUT Field -->
-                <div class="form-group col-md-6">
-                    <label for="rut">RUT <span class="text-muted">(Ej: 12345678K)</span></label>
-                    <input type="text" class="form-control" id="rut" name="rut" 
-                           value="{{ proveedor.rut }}" placeholder="Ingrese el RUT" maxlength="12" required>
-                </div>
-
-                <!-- Nombre Field -->
-                <div class="form-group col-md-6">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" 
-                           value="{{ proveedor.nombre }}" placeholder="Ingrese el nombre" required>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Dirección Field -->
-                <div class="form-group col-md-6">
-                    <label for="direccion">Dirección</label>
-                    <textarea class="form-control" id="direccion" name="direccion" 
-                              placeholder="Ingrese la dirección" required>{{ proveedor.direccion }}</textarea>
-                </div>
-
-                <!-- Teléfono Field -->
-                <div class="form-group col-md-6">
-                    <label for="telefono">Teléfono <span class="text-muted">(Ej: +56912345678)</span></label>
-                    <input type="tel" class="form-control" id="telefono" name="telefono" 
-                           value="{{ proveedor.telefono }}" placeholder="Ingrese el teléfono" required>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Email Field -->
-                <div class="form-group col-md-6">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" 
-                           value="{{ proveedor.email }}" placeholder="Ingrese el email" required>
-                </div>
-
-                <!-- Giro Field -->
-                <div class="form-group col-md-6">
-                    <label for="giro">Giro</label>
-                    <select class="form-control" id="giro" name="giro" required>
-                        <option value="">Seleccione un giro</option>
-                    </select>
-                    {% if form.giro.errors %}
-                        <div class="text-danger">{{ form.giro.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Región Field -->
-                <div class="form-group col-md-6">
-                    <label for="id_region">Región</label>
-                    <select class="form-control" id="id_region" name="region" required>
-                        <option value="">Seleccione una región</option>
-                        {% for region in form.region.field.queryset %}
-                            <option value="{{ region.codigo_region }}" {% if proveedor.region.codigo_region == region.codigo_region %}selected{% endif %}>
-                                {{ region.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Provincia Field -->
-                <div class="form-group col-md-6">
-                    <label for="id_provincia">Provincia</label>
-                    <select class="form-control" id="id_provincia" name="provincia" required>
-                        <option value="">Seleccione una provincia</option>
-                        {% for provincia in form.provincia.field.queryset %}
-                            <option value="{{ provincia.codigo_provincia }}" {% if proveedor.provincia.codigo_provincia == provincia.codigo_provincia %}selected{% endif %}>
-                                {{ provincia.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Comuna Field -->
-                <div class="form-group col-md-6">
-                    <label for="id_comuna">Comuna</label>
-                    <select class="form-control" id="id_comuna" name="comuna" required>
-                        <option value="">Seleccione una comuna</option>
-                        {% for comuna in form.comuna.field.queryset %}
-                            <option value="{{ comuna.codigo_comuna }}" {% if proveedor.comuna.codigo_comuna == comuna.codigo_comuna %}selected{% endif %}>
-                                {{ comuna.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Logo Field --> 
-                <div class="form-group col-md-6">
-                    <label for="logo">Logo (opcional)</label>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="logo-input" name="logo" accept="image/*">
-                        <label class="custom-file-label" for="logo-input">Buscar</label>
+            <!-- Campo Buscar Proveedor -->
+            <div class="form-group">
+                <label for="search" class="font-weight-bold">Buscar Proveedor</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text bg-light">
+                            <i class="fa fa-search text-secondary"></i>
+                        </div>
                     </div>
-                    <div id="logo-preview" class="mt-2"></div>
+                    <input type="text" class="form-control" id="search" placeholder="Buscar por Id o nombre" onkeyup="filterProviders()">
                 </div>
+                <small class="form-text text-muted">Ingrese el ID o nombre del proveedor para seleccionarlo.</small>
+            </div>
+            
+            <!-- Selección de Proveedor -->
+            <div class="form-group">
+                <label for="proveedor" class="font-weight-bold">Seleccionar Proveedor</label>
+                <select class="form-control custom-select" id="id" name="id">
+                    {% for p in proveedores %}
+                        <option value="{{ p.id }}"{% if p.id == proveedor.id %} selected {% endif %}>
+                            {{ p.id }} - {{ p.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <!-- Submit Button -->
-            <div class="text-center mt-4">
-                <a href="{% url 'listarProveedor' %}" class="btn btn-primary">
+            <!-- Sección de Información Básica -->
+            <h4 class="text-secondary mt-4 mb-3">Información Básica</h4>
+
+            <div class="form-group">
+                <label for="rut" class="font-weight-bold">RUT</label>
+                <input type="text" class="form-control border-gray" id="rut" name="rut" placeholder="Ingrese el RUT" value="{{ proveedor.rut }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nombre" class="font-weight-bold">Nombre</label>
+                <input type="text" class="form-control border-gray" id="nombre" name="nombre" placeholder="Ingrese el nombre del proveedor" value="{{ proveedor.nombre }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion" class="font-weight-bold">Dirección</label>
+                <textarea class="form-control border-gray" id="direccion" name="direccion" placeholder="Ingrese la dirección" required>{{ proveedor.direccion }}</textarea>
+            </div>
+
+            <!-- Sección de Contacto -->
+            <h4 class="text-secondary mt-4 mb-3">Información de Contacto</h4>
+
+            <div class="form-group">
+                <label for="telefono" class="font-weight-bold">Teléfono</label>
+                <input type="tel" class="form-control border-gray" id="telefono" name="telefono" placeholder="Ingrese el teléfono (Ej: +56912345678)" value="{{ proveedor.telefono }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="font-weight-bold">Email</label>
+                <input type="email" class="form-control border-gray" id="email" name="email" placeholder="Ingrese el email" value="{{ proveedor.email }}" required>
+            </div>
+
+            <!-- Sección de Relaciones -->
+            <h4 class="text-secondary mt-4 mb-3">Relaciones</h4>
+
+            <div class="form-group">
+                <label for="giro" class="font-weight-bold">Giro</label>
+                <select class="form-control custom-select" id="giro" name="giro" required>
+                    {% for giro in giros %}
+                        <option value="{{ giro.id }}" {% if proveedor.giro and giro.id == proveedor.giro.id %}selected{% endif %}>
+                            {{ giro.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="region" class="font-weight-bold">Región</label>
+                <select class="form-control custom-select" id="id_region" name="region" required>
+                    <option value="">Seleccione una región</option>
+                </select>
+                {% if form.region.errors %}
+                    <div class="text-danger">{{ form.region.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="provincia" class="font-weight-bold">Provincia</label>
+                <select class="form-control custom-select" id="id_provincia" name="provincia" required>
+                    <option value="">Seleccione una provincia</option>
+                </select>
+                {% if form.provincia.errors %}
+                    <div class="text-danger">{{ form.provincia.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="comuna" class="font-weight-bold">Comuna</label>
+                <select class="form-control custom-select" id="id_comuna" name="comuna" required>
+                    <option value="">Seleccione una comuna</option>
+                </select>
+                {% if form.comuna.errors %}
+                    <div class="text-danger">{{ form.comuna.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Sección de Logo -->
+            <h4 class="text-secondary mt-4 mb-3">Logo</h4>
+
+            <div class="form-group">
+                <label for="logo" class="font-weight-bold">Logo (opcional)</label>
+                <input type="file" class="form-control border-gray" id="logo" name="logo" accept="image/*">
+                {% if proveedor.logo %}
+                    <img src="{{ proveedor.logo.url }}" alt="Logo actual" class="mt-2" style="max-height: 100px;">
+                {% endif %}
+            </div>
+
+            <!-- Botones -->
+            <div class="form-group text-center mt-4">
+                <a href="{% url 'listarProveedor' %}" class="btn btn-outline-secondary">
                     <i class="fa fa-arrow-left"></i> Volver
                 </a>
-                <button type="button" class="btn btn-warning" style="color: azure;" onclick="confirmModification()">
-                    <i class="fa fa-refresh"></i> Modificar Proveedor
-                </button>             
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-check-circle"></i> Guardar Cambios
+                </button>
             </div>
         </form>
     </div>
 </div>
 
+
 <script>
+    function filterProviders() {
+        const input = document.getElementById('search');
+        const filter = input.value.toUpperCase();
+        const select = document.getElementById('id');
+        const options = select.getElementsByTagName('option');
+        
+        for (let i = 0; i < options.length; i++) {
+            const txtValue = options[i].textContent || options[i].innerText;
+            options[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+
+
      document.addEventListener('DOMContentLoaded', function() {
         loadGiros(); // Llamar a la función para cargar giros al cargar la página
     });
@@ -170,15 +190,14 @@
             .catch(error => {
                 console.error('Error:', error);
             });
-        
 
         regionSelect.addEventListener('change', function() {
             const regionId = this.value;
             fetch(`{% url "get_provincias_por_region" region_id=":region_id" %}`.replace(':region_id', regionId))
                 .then(response => response.json())
                 .then(data => {
-                    provinciaSelect.innerHTML = '<option value="">Seleccione una provincia</option>';
-                    comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+                    provinciaSelect.innerHTML = '<option value="">Selecciona una provincia</option>';
+                    comunaSelect.innerHTML = '<option value="">Selecciona una comuna</option>';
                     data.forEach(provincia => {
                         const option = document.createElement('option');
                         option.value = provincia.id;
@@ -196,7 +215,7 @@
             fetch(`{% url "get_comunas_por_provincia" provincia_id=":provincia_id" %}`.replace(':provincia_id', provinciaId))
                 .then(response => response.json())
                 .then(data => {
-                    comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+                    comunaSelect.innerHTML = '<option value="">Selecciona una comuna</option>';
                     data.forEach(comuna => {
                         const option = document.createElement('option');
                         option.value = comuna.id;

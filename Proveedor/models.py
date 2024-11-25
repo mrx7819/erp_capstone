@@ -38,6 +38,7 @@ class Proveedor(models.Model):
     direccion = models.TextField()              # Campo para la dirección del proveedor
     comuna = models.ForeignKey(Comuna, on_delete=models.SET_NULL, null=True, related_name='proveedores')  # Relación con el modelo Comuna
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, related_name='proveedores')  # Relación con el modelo Region
+    provincia = models.ForeignKey(Provincia, on_delete=models.SET_NULL, null=True, related_name='proveedores')
     telefono = models.CharField(max_length=15)  # Campo para el teléfono del proveedor
     email = models.EmailField()                  # Campo para el correo electrónico del proveedor
     fecha_creacion = models.DateTimeField(auto_now_add=True)  # Fecha de creación del proveedor

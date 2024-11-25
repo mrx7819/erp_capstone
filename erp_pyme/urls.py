@@ -5,6 +5,7 @@ from Home import views as home_views
 from django.contrib.auth import views as auth_views
 from Cliente import views as cliente_views
 from Inventario.views import *
+from Venta.views import *
 from Proveedor import views as proveedor_views
 
 urlpatterns = [
@@ -20,13 +21,20 @@ urlpatterns = [
     #Clientes
     path('listarCliente/', cliente_views.listarCliente, name='listarCliente'),
     path('agregarCliente/', cliente_views.agregarCliente, name='agregarCliente'),
-    path('modificarCliente/<int:idCliente>', cliente_views.modificarCliente, name='modificarCliente'),
-    path('eliminarCliente/<int:idCliente>', cliente_views.eliminarCliente, name='eliminarCliente'),
+    path('modificarCliente/<int:idCliente>/', cliente_views.modificarCliente, name='modificarCliente'),
+    path('eliminarCliente/<int:idCliente>/', cliente_views.eliminarCliente, name='eliminarCliente'),
+    #Ventas
+    path('listarVenta/', listarVenta, name='listarVenta'),
+    path('agregarVenta/', agregarVenta, name='agregarVenta'),
+    path('modificarVenta/<int:idVenta>/', modificarVenta, name='modificarVenta'),
+    path('eliminarVenta/<int:idVenta>/', eliminarVenta, name='eliminarVenta'),
+    path('eliminar-detalle/', eliminar_detalle, name='eliminar_detalle'),
+    path('get-producto-precio/<int:producto_id>/', get_producto_precio, name='get_producto_precio'),
     #Proveedores
     path('agregarProveedor/', proveedor_views.agregarProveedor, name='agregarProveedor'),
     path('listarProveedor/', proveedor_views.listarProveedor, name='listarProveedor'),
-    path('modificarProveedor/<int:idProveedor>', proveedor_views.modificarProveedor, name='modificarProveedor'),
-    path('eliminarProveedor/<int:idProveedor>', proveedor_views.eliminarProveedor, name='eliminarProveedor'),
+    path('modificarProveedor/<int:idProveedor>/', proveedor_views.modificarProveedor, name='modificarProveedor'),
+    path('eliminarProveedor/<int:idProveedor>/', proveedor_views.eliminarProveedor, name='eliminarProveedor'),
     #Categorías
     path('listarCategoria/', listarCategoria, name='listarCategoria'),
     path('agregarCategoria/', agregarCategoria, name='agregarCategoria'),

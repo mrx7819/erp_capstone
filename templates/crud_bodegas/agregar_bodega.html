@@ -6,18 +6,41 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Agregar Bodega</h1>
         
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <div class="form-container">
-            <form class="agregarBodega-form" action="{% url 'agregarBodega' %}" method="post" enctype="multipart/form-data">
+            <form class="agregarBodega-form" action="{% url 'agregarBodega' %}" method="post">
                 {% csrf_token %}
                 
                 <div class="row">
                     <!-- Nombre Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="nombre">Nombre</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" 
                                value="{{ form.nombre.value|default:'' }}" placeholder="Ingrese el nombre de la bodega" required>
                         {% if form.nombre.errors %}
                             <div class="text-danger">{{ form.nombre.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Capacidad Field -->
+                    <div class="form-group col-md-6">
+                        <label for="capacidad">Capacidad</label>
+                        <input type="number" class="form-control" id="capacidad" name="capacidad" 
+                               value="{{ form.capacidad.value|default:'' }}" placeholder="Ingrese la capacidad de la bodega" required min="0">
+                        {% if form.capacidad.errors %}
+                            <div class="text-danger">{{ form.capacidad.errors.0 }}</div>
                         {% endif %}
                     </div>
                 </div>
@@ -26,7 +49,7 @@
                     <!-- Dirección Field -->
                     <div class="form-group col-md-12">
                         <label for="direccion">Dirección</label>
-                        <textarea class="form-control" id="direccion" name="direccion" placeholder="Ingrese la dirección">{{ form.direccion.value|default:'' }}</textarea>
+                        <textarea class="form-control" id="direccion" name="direccion" placeholder="Ingrese la dirección" required>{{ form.direccion.value|default:'' }}</textarea>
                         {% if form.direccion.errors %}
                             <div class="text-danger">{{ form.direccion.errors.0 }}</div>
                         {% endif %}
@@ -35,7 +58,7 @@
 
                 <div class="row">
                     <!-- Región Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-4">
                         <label for="region">Región</label>
                         <select class="form-control" id="id_region" name="region" required>
                             <option value="">Selecciona una región</option>
@@ -44,11 +67,9 @@
                             <div class="text-danger">{{ form.region.errors.0 }}</div>
                         {% endif %}
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Provincia Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-4">
                         <label for="provincia">Provincia</label>
                         <select class="form-control" id="id_provincia" name="provincia" required>
                             <option value="">Selecciona una provincia</option>
@@ -57,11 +78,9 @@
                             <div class="text-danger">{{ form.provincia.errors.0 }}</div>
                         {% endif %}
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Comuna Field -->
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-4">
                         <label for="comuna">Comuna</label>
                         <select class="form-control" id="id_comuna" name="comuna" required>
                             <option value="">Selecciona una comuna</option>
@@ -77,7 +96,7 @@
                     <a href="{% url 'listarBodega' %}" class="btn btn-primary">
                         <i class="fa fa-arrow-left"></i> Volver
                     </a>
-                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Agregar Bodega </button>             
+                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Agregar Bodega</button>             
                 </div>
             </form>
         </div>
