@@ -49,9 +49,13 @@
       <div class="main_container">
         <div class="col-md-3 left_col menu_fixed">
           <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="{% url 'index' %}" class="site_title"><span>Panel de control</span></a>
+            <div class="navbar nav_title">
+              <a href="{% url 'index' %}" class="site_title" style="color: white; display: block;">
+                <span style="font-size: 18px; font-weight: bold;">Panel de control</span>
+                <img src="https://i.ibb.co/0m32skp/TECNOLO.png" alt="TECNOLO" style="max-height: 50px; margin-top: 10px;">
+              </a>
             </div>
+            
 
             <div class="clearfix"></div>
 
@@ -63,8 +67,12 @@
               <div class="profile_info">
                 <span>Bienvenido,</span>
                 <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                {% if user.empresa %}
+                  <h4 style="font-size: 14px; color: #ccc;">Empresa: {{ user.empresa }}</h4>
+                {% endif %}
               </div>
             </div>
+            
             <!-- /menu profile quick info -->
 
             <br />
@@ -148,7 +156,7 @@
                   <li>
                     <a><i class="fa-solid fa-newspaper"></i> Manual <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver Manual</a></li>
+                      <li><a href="{% url 'ver_manual' %}"><i class="fa fa-eye"></i> Ver Manual</a></li>
                     </ul>
                   </li>
                 </ul>

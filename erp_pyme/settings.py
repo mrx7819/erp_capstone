@@ -21,10 +21,14 @@ ALLOWED_HOSTS = []
 LOGIN_URL = '/login/'  #Login
 LOGIN_REDIRECT_URL = 'home'  # Página a la que será redirigido después de iniciar sesión
 LOGOUT_REDIRECT_URL = 'login'  # Página a la que será redirigido después de cerrar sesión
-STATIC_URL = '/static/' #STATIC
+# STATIC
+STATIC_URL = '/static/'  # URL base para los archivos estáticos
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),  # Directorio donde se encuentran los archivos estáticos durante el desarrollo
 ]
+
+# STATIC_ROOT es necesario para recopilar archivos estáticos en producción
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Carpeta de salida donde se recopilarán los archivos estáticos
 
 # Application definition
 

@@ -82,6 +82,13 @@ urlpatterns = [
     path('api/', include('Proveedor.urls')),
     path('api/', include('Inventario.urls')),
     path('reportes/', ver_reporte, name='ver_reporte'),
+    path('manual/', ver_manual, name='ver_manual'),
+    #####################################
+    path('reporte_ventas/', reporte_ventas, name='reporte_ventas'),
+    path('reporte_clientes_compras/', reporte_clientes_compras, name='reporte_clientes_compras'),
+    path('reporte_productos_vendidos/', reporte_productos_vendidos, name='reporte_productos_vendidos'),
+    path('reporte_ganancias_netas/', reporte_ganancias_netas, name='reporte_ganancias_netas'),
+    path('reporte_ventas_diarias/', reporte_ventas_diarias, name='reporte_ventas_diarias'),
 
 
 
