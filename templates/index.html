@@ -1,6 +1,43 @@
 {% extends 'index_master.html' %}
 {% load static %}
 {% block content %}
+<style>
+    .producto-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: linear-gradient(135deg, #222222, #757575);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
+    color: #fcfcfc;
+    font-weight: 400;
+}
+
+.producto-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.producto-item span {
+    font-size: 10px;
+}
+
+.producto-item .nombre {
+    font-weight: bold;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.producto-item .ventas {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+</style>
 <div class="right_col" role="main">
     <!-- Contenedor de las 4 principales cards -->
     <div class="row row-principal">
@@ -56,19 +93,14 @@
                     <h2 class="card-title">Productos vendidos</h2>
                 </div>
                 <div class="card-body custom-card-body">
-                    <table class="mini-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>N° Ventas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productosVendidos">
-                        </tbody>
-                    </table>
+                    <div id="productosVendidos" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Productos dinámicos se insertarán aquí -->
+                    </div>
                 </div>
             </div>
         </div>
+        
+        
         
         
         <!-- Card 3 -->
@@ -297,7 +329,7 @@ renderChart();
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    const tbody = document.getElementById("productosVendidos");
+    const contenedorProductos = document.getElementById("productosVendidos");
 
     async function cargarProductosVendidos() {
         try {
@@ -305,22 +337,30 @@ renderChart();
             const data = await response.json();
 
             // Limitar a 5 productos
-            const productosLimitados = data.slice(0, 5);
+            const productosLimitados = data.slice(0, 3);
 
-            // Limpiar la tabla antes de llenar los datos
-            tbody.innerHTML = "";
+            // Limpiar el contenedor antes de llenar los datos
+            contenedorProductos.innerHTML = "";
 
-            // Agregar filas dinámicamente
+            // Agregar cada producto dinámicamente
             productosLimitados.forEach((producto, index) => {
-                const fila = document.createElement("tr");
-                fila.innerHTML = `
-                    <td>${producto.nombre}</td>
-                    <td>${producto.ventas}</td>
+                const item = document.createElement("div");
+                item.className = "producto-item";
+                item.innerHTML = `
+                    <span class="nombre">${producto.nombre}</span>
+                    <span class="ventas">${producto.ventas} Ventas</span>
                 `;
-                tbody.appendChild(fila);
 
-                // Aplicar animación con retraso
-                fila.style.animationDelay = `${index * 0.1}s`;
+                // Animación de entrada
+                item.style.opacity = "0";
+                item.style.transform = "translateY(20px)";
+                setTimeout(() => {
+                    item.style.opacity = "1";
+                    item.style.transform = "translateY(0)";
+                    item.style.transition = "all 0.3s ease";
+                }, index * 100);
+
+                contenedorProductos.appendChild(item);
             });
         } catch (error) {
             console.error("Error al cargar los productos vendidos:", error);
