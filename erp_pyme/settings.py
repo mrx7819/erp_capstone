@@ -11,27 +11,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wcq7(ki^xu5)&t15wp@i$nm^lv4+cx@h$ykt@zrug!dw@f5_ek'
+SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = []
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 LOGIN_URL = '/login/'  #Login
 LOGIN_REDIRECT_URL = 'home'  # Página a la que será redirigido después de iniciar sesión
 LOGOUT_REDIRECT_URL = 'login'  # Página a la que será redirigido después de cerrar sesión
 # STATIC
 STATIC_URL = '/static/'  # URL base para los archivos estáticos
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # Directorio donde se encuentran los archivos estáticos durante el desarrollo
 ]
 
-# STATIC_ROOT es necesario para recopilar archivos estáticos en producción
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Carpeta de salida donde se recopilarán los archivos estáticos
+
+
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -70,6 +78,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Añadir aquí
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
