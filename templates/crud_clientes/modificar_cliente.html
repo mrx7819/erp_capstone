@@ -5,152 +5,150 @@
 {% block content %}
 <div class="right_col" role="main">
     <div class="container mt-5">
-        <h1 class="text-center mb-4 text-dark">Modificar Producto</h1>
-        
-        <form action="{% if producto.id %}{% url 'modificarProducto' producto.id %}{% endif %}" method="POST" enctype="multipart/form-data" class="p-4 shadow-lg bg-white rounded">
-            {% csrf_token %}
-            
-            <!-- Campo Buscar Producto -->
-            <div class="form-group">
-                <label for="search" class="font-weight-bold">Buscar Producto</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text bg-light">
-                            <i class="fa fa-search text-secondary"></i>
-                        </div>
-                    </div>
-                    <input type="text" class="form-control" id="search" placeholder="Buscar por SKU o nombre" onkeyup="filterProducts()">
+        <h1 class="text-center mb-4">Modificar Cliente - ID: {{ cliente.id }}</h1>
+
+        <div class="form-container shadow p-4 rounded" style="max-width: 900px; margin: auto; background-color: #ffffff;">
+            <form action="{% if cliente.id %}{% url 'modificarCliente' cliente.id %}{% endif %}" method="POST" style="font-size: 0.9rem;">
+                {% csrf_token %}
+
+                <!-- Selección de Cliente -->
+                <div class="form-group">
+                    <label for="id">Cliente</label>
+                    <select class="form-control rounded-pill" id="id" name="id">
+                        {% for c in clientes %}
+                            <option value="{{ c.id }}" {% if c.id == cliente.id %}selected{% endif %}>
+                                {{ c.id }} - {{ c.nombre }} {{ c.apellido }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <small class="form-text text-muted">Ingrese el SKU o nombre del producto para seleccionarlo.</small>
-            </div>
-            
-            <!-- Selección de Producto -->
-            <div class="form-group">
-                <label for="id" class="font-weight-bold">Seleccionar Producto</label>
-                <select class="form-control custom-select" id="id" name="id">
-                    {% for p in productos %}
-                        <option value="{{ p.id }}" {% if p.id == producto.id %}selected{% endif %}>
-                            {{ p.id }} - {{ p.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
 
-            <!-- Información Básica -->
-            <h4 class="text-secondary mt-4 mb-3">Información Básica</h4>
-
-            <div class="form-group">
-                <label for="sku" class="font-weight-bold">SKU</label>
-                <input type="text" class="form-control border-gray" id="sku" name="sku" placeholder="Ingrese el SKU" value="{{ producto.sku }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="nombre" class="font-weight-bold">Nombre</label>
-                <input type="text" class="form-control border-gray" id="nombre" name="nombre" placeholder="Ingrese el nombre del producto" value="{{ producto.nombre }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="descripcion" class="font-weight-bold">Descripción</label>
-                <textarea class="form-control border-gray" id="descripcion" name="descripcion" placeholder="Ingrese una descripción">{{ producto.descripcion }}</textarea>
-            </div>
-
-            <!-- Detalles del Producto -->
-            <h4 class="text-secondary mt-4 mb-3">Detalles del Producto</h4>
-
-            <div class="form-group">
-                <label for="precio_compra" class="font-weight-bold">Precio de Compra</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text bg-light">
-                            <i class="fa fa-dollar text-secondary"></i>
-                        </div>
+                <div class="row">
+                    <!-- RUT Field -->
+                    <div class="form-group col-md-6">
+                        <label for="rut">RUT</label>
+                        <input type="text" class="form-control rounded-pill" id="rut" name="rut"
+                               value="{{ cliente.rut }}" placeholder="Ingrese el RUT" required>
                     </div>
-                    <input type="number" class="form-control border-gray" id="precio_compra" name="precio_compra" placeholder="Ingrese el precio de compra" value="{{ producto.precio_compra }}" step="0.01" required>
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label for="precio_venta" class="font-weight-bold">Precio de Venta</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text bg-light">
-                            <i class="fa fa-dollar text-secondary"></i>
-                        </div>
+                    <!-- Nombre Field -->
+                    <div class="form-group col-md-6">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control rounded-pill" id="nombre" name="nombre"
+                               value="{{ cliente.nombre }}" placeholder="Ingrese el nombre del cliente" required>
                     </div>
-                    <input type="number" class="form-control border-gray" id="precio_venta" name="precio_venta" placeholder="Ingrese el precio de venta" value="{{ producto.precio_venta }}" step="0.01" required>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="cantidad" class="font-weight-bold">Cantidad</label>
-                <input type="number" class="form-control border-gray" id="cantidad" name="cantidad" placeholder="Ingrese la cantidad en stock" value="{{ producto.cantidad }}" required>
-            </div>
+                <div class="row">
+                    <!-- Apellido Field -->
+                    <div class="form-group col-md-6">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" class="form-control rounded-pill" id="apellido" name="apellido"
+                               value="{{ cliente.apellido }}" placeholder="Ingrese el apellido del cliente" required>
+                    </div>
 
-            <!-- Relaciones -->
-            <h4 class="text-secondary mt-4 mb-3">Relaciones</h4>
+                    <!-- Teléfono Field -->
+                    <div class="form-group col-md-6">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" class="form-control rounded-pill" id="telefono" name="telefono"
+                               value="{{ cliente.telefono }}" placeholder="Ingrese el teléfono" required>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="categoria" class="font-weight-bold">Categoría</label>
-                <select class="form-control custom-select border-gray" id="categoria" name="categoria">
-                    {% for categoria in categorias %}
-                        <option value="{{ categoria.id }}" {% if producto.categoria and categoria.id == producto.categoria.id %}selected{% endif %}>
-                            {{ categoria.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+                <div class="row">
+                    <!-- Email Field -->
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control rounded-pill" id="email" name="email"
+                               value="{{ cliente.email }}" placeholder="Ingrese el email del cliente" required>
+                    </div>
 
-            <div class="form-group">
-                <label for="proveedor" class="font-weight-bold">Proveedor</label>
-                <select class="form-control custom-select border-gray" id="proveedor" name="proveedor">
-                    {% for proveedor in proveedores %}
-                        <option value="{{ proveedor.id }}" {% if producto.proveedor and proveedor.id == producto.proveedor.id %}selected{% endif %}>
-                            {{ proveedor.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+                    <!-- Fecha de Nacimiento Field -->
+                    <div class="form-group col-md-6">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control rounded-pill" id="fecha_nacimiento" name="fecha_nacimiento"
+                               value="{{ cliente.fecha_nacimiento }}" required>
+                    </div>
+                </div>
 
-            <!-- Imagen -->
-            <div class="form-group">
-                <label for="imagen" class="font-weight-bold">Imagen</label>
-                <input type="file" class="form-control border-gray" id="imagen" name="imagen">
-                {% if producto.img %}
-                <small class="form-text text-muted">Imagen actual:</small>
-                <img src="{{ producto.img.url }}" alt="Imagen del producto" style="width: 100px; height: auto;">
-                {% endif %}
-            </div>
+                <div class="row">
+                    <!-- Dirección Field -->
+                    <div class="form-group col-md-12">
+                        <label for="direccion">Dirección</label>
+                        <textarea class="form-control rounded" id="direccion" name="direccion"
+                                  placeholder="Ingrese la dirección" rows="2" style="resize: none;">{{ cliente.direccion }}</textarea>
+                    </div>
+                </div>
 
-            <!-- Botones -->
-            <div class="form-group text-center mt-4">
-                <a href="{% url 'listarProducto' %}" class="btn btn-outline-secondary">
-                    <i class="fa fa-arrow-left"></i> Volver
-                </a>
-                <button type="submit" class="btn btn-success">
-                    <i class="fa fa-check-circle"></i> Guardar Cambios
-                </button>
-            </div>
-        </form>
+                <div class="row">
+                    <!-- Género Field -->
+                    <div class="form-group col-md-6">
+                        <label for="genero">Género</label>
+                        <select class="form-control rounded-pill" id="genero" name="genero" required>
+                            <option value="M" {% if cliente.genero == "M" %}selected{% endif %}>Masculino</option>
+                            <option value="F" {% if cliente.genero == "F" %}selected{% endif %}>Femenino</option>
+                            <option value="O" {% if cliente.genero == "O" %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Interacciones del Cliente -->
+                <hr>
+                <h4 class="mt-3">Interacciones del Cliente</h4>
+                <div class="row">
+                    <!-- Listado de Interacciones -->
+                    <div class="form-group col-md-12">
+                        {% for interaccion in interacciones %}
+                        <div class="card mb-2 shadow">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ interaccion.tipo_interaccion }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ interaccion.fecha }}</h6>
+                                <p class="card-text">{{ interaccion.descripcion }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="alert alert-warning" role="alert">
+                            No hay interacciones registradas para este cliente.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Agregar Nueva Interacción -->
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="interaccion_tipo">Tipo de Interacción</label>
+                        <select class="form-control rounded-pill" id="interaccion_tipo" name="interaccion_tipo">
+                            <option value="Llamada">Llamada</option>
+                            <option value="Email">Email</option>
+                            <option value="Reunión">Reunión</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="interaccion_fecha">Fecha</label>
+                        <input type="date" class="form-control rounded-pill" id="interaccion_fecha" name="interaccion_fecha">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="interaccion_descripcion">Descripción</label>
+                        <textarea class="form-control rounded" id="interaccion_descripcion" name="interaccion_descripcion"
+                                  placeholder="Descripción de la interacción" rows="1" style="resize: none;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'listarCliente' %}" class="btn btn-primary btn-sm rounded-pill">
+                        <i class="fa fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-success btn-sm rounded-pill">
+                        <i class="fa fa-check-circle"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<script>
-function filterProducts() {
-    var input, filter, select, options, i, txtValue;
-    input = document.getElementById('search');
-    filter = input.value.toUpperCase();
-    select = document.getElementById('id');
-    options = select.getElementsByTagName('option');
-    
-    for (i = 0; i < options.length; i++) {
-        txtValue = options[i].textContent || options[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            options[i].style.display = "";
-        } else {
-            options[i].style.display = "none";
-        }
-    }
-}
-</script>
-
 {% endblock %}

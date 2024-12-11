@@ -12,19 +12,14 @@
                 {% csrf_token %}
                 
                 <div class="form-group">
-                    <label for="venta_id">ID Venta</label> 
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <i class="fa fa-id-badge"></i>
-                            </div>
-                            <select id="venta_id" name="id">
-                                {% for v in ventas %}
-                                    <option value="{{ v.id }}" {% if v.id == venta.id %} selected {% endif %}>{{ v.id }}</option>
-                                {% endfor %}
-                            </select>   
-                        </div> 
-                    </div>
+                    <label for="venta_id">Seleccione la Venta</label>
+                    <select class="form-control" id="venta_id" name="id" required>
+                        {% for v in ventas %}
+                        <option value="{{ v.id }}" {% if venta.id == v.id %}selected{% endif %}>
+                            ID: {{ v.id }} - Cliente: {{ v.cliente.nombre }} {{ v.cliente.apellido }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="row">
@@ -33,9 +28,9 @@
                         <label for="cliente">Cliente</label>
                         <select class="form-control" id="cliente" name="cliente" required>
                             {% for cliente in clientes %}
-                                <option value="{{ cliente.id }}" {% if venta.cliente and cliente.id == venta.cliente.id %}selected{% endif %}>
-                                    {{ cliente.nombre }} {{ cliente.apellido }}
-                                </option>
+                            <option value="{{ cliente.id }}" {% if venta.cliente and cliente.id == venta.cliente.id %}selected{% endif %}>
+                                {{ cliente.nombre }} {{ cliente.apellido }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -45,48 +40,73 @@
                         <label for="metodo_pago">Método de Pago</label>
                         <select class="form-control" id="metodo_pago" name="metodo_pago" required>
                             {% for key, value in metodo_pago_choices %}
-                                <option value="{{ key }}" {% if venta.metodo_pago == key %}selected{% endif %}>
-                                    {{ value }}
-                                </option>
+                            <option value="{{ key }}" {% if venta.metodo_pago == key %}selected{% endif %}>
+                                {{ value }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
 
                 <div class="row">
-                    <!-- Impuesto -->
-                    <div class="form-group col-md-4">
-                        <label for="impuesto">Impuesto</label>
-                        <input type="number" class="form-control" id="impuesto" name="impuesto" 
-                               value="{{ venta.impuesto }}" step="0.01" placeholder="Ingrese el impuesto">
-                    </div>
-
-                    <!-- Descuento -->
-                    <div class="form-group col-md-4">
-                        <label for="descuento">Descuento</label>
-                        <input type="number" class="form-control" id="descuento" name="descuento" 
-                               value="{{ venta.descuento }}" step="0.01" placeholder="Ingrese el descuento">
-                    </div>
-
                     <!-- Estado -->
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-6">
                         <label for="estado">Estado</label>
                         <select class="form-control" id="estado" name="estado" required>
                             {% for key, value in estado_choices %}
-                                <option value="{{ key }}" {% if venta.estado == key %}selected{% endif %}>
-                                    {{ value }}
-                                </option>
+                            <option value="{{ key }}" {% if venta.estado == key %}selected{% endif %}>
+                                {{ value }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
 
-                <div class="row">
-                    <!-- Total Venta -->
+                <hr>
+                <h4 class="text-dark">Detalles de Venta</h4>
+                <div id="detalle-container">
+                    {% for detalle in venta.detalle_venta_set.all %}
+                    <div class="detalle-row row mb-2" data-detalle-id="{{ detalle.id }}">
+                        <div class="form-group col-md-3">
+                            <label for="producto">Producto</label>
+                            <select class="form-control producto" name="productos[]" required>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" {% if producto.id == detalle.producto.id %}selected{% endif %}>
+                                    {{ producto.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="cantidad">Cantidad</label>
+                            <input type="number" class="form-control cantidad" name="cantidades[]" value="{{ detalle.cantidad }}" min="1" required>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="precio">Precio Unitario</label>
+                            <input type="number" class="form-control precio" name="precios[]" value="{{ detalle.precio_unitario }}" step="0.01" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="descuento">Descuento (%)</label>
+                            <input type="number" class="form-control descuento" name="descuentos[]" value="{{ detalle.descuento }}" step="0.01" min="0" max="100">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="total">Total</label>
+                            <input type="text" class="form-control total" value="{{ detalle.total_venta }}" readonly>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+
+                <button type="button" id="add-detalle" class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-plus"></i> Agregar Detalle
+                </button>
+
+                <!-- Total Venta -->
+                <div class="row mt-4">
                     <div class="form-group col-md-12">
-                        <label for="total_venta">Total Venta</label>
-                        <input type="text" class="form-control" id="total_venta" name="total_venta" 
-                               value="{{ venta.total_venta }}" readonly>
+                        <label for="total_venta">Total de la Venta</label>
+                        <input type="text" class="form-control" id="total_venta" name="total_venta" value="{{ venta.total_venta }}" readonly>
                     </div>
                 </div>
 
@@ -106,21 +126,57 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const impuestoInput = document.getElementById('impuesto');
-        const descuentoInput = document.getElementById('descuento');
+        const detalleContainer = document.getElementById('detalle-container');
         const totalVentaInput = document.getElementById('total_venta');
-        
-        function calcularTotal() {
-            const impuesto = parseFloat(impuestoInput.value) || 0;
-            const descuento = parseFloat(descuentoInput.value) || 0;
-            const totalBase = parseFloat(totalVentaInput.dataset.base) || 0;
 
-            const total = totalBase + impuesto - descuento;
-            totalVentaInput.value = total.toFixed(2);
+        function calculateRowTotal(row) {
+            const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
+            const precio = parseFloat(row.querySelector('.precio').value) || 0;
+            const descuento = parseFloat(row.querySelector('.descuento').value) || 0;
+
+            const subtotal = cantidad * precio;
+            const total = Math.max(subtotal * (1 - descuento / 100), 0);
+            row.querySelector('.total').value = `$${total.toFixed(2)}`;
+            return total;
         }
 
-        impuestoInput.addEventListener('input', calcularTotal);
-        descuentoInput.addEventListener('input', calcularTotal);
+        function updateTotalVenta() {
+            const rows = detalleContainer.querySelectorAll('.detalle-row');
+            let totalVenta = 0;
+
+            rows.forEach(row => {
+                totalVenta += calculateRowTotal(row);
+            });
+
+            totalVentaInput.value = `$${totalVenta.toFixed(2)}`;
+        }
+
+        detalleContainer.addEventListener('change', function (event) {
+            const row = event.target.closest('.detalle-row');
+
+            if (event.target.classList.contains('producto')) {
+                const productoId = event.target.value;
+
+                fetch(`/get-producto-precio/${productoId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            row.querySelector('.precio').value = data.precio_venta;
+                            updateTotalVenta();
+                        } else {
+                            alert('No se pudo obtener el precio del producto.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            if (event.target.classList.contains('cantidad') || event.target.classList.contains('descuento')) {
+                updateTotalVenta();
+            }
+        });
+
+        updateTotalVenta();
     });
 </script>
+
 {% endblock %}

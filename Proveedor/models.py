@@ -3,6 +3,8 @@ from Ubicacion.models import *
 from Inventario import *
 from django.utils.text import slugify  # Importar slugify para generar slugs automáticamente
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.utils import timezone
 
 class CategoriaGiro(models.Model):
     nombre = models.CharField(max_length=150)
@@ -32,7 +34,8 @@ class Giro(models.Model):
         verbose_name_plural = "Giros"
     
 class Proveedor(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='proveedores', default=0)  # Agregar este campo
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+
     rut = models.CharField(max_length=12, unique=True, default='00.000.000-0') 
     nombre = models.CharField(max_length=100)  # Campo para el nombre del proveedor
     direccion = models.TextField()              # Campo para la dirección del proveedor
@@ -45,6 +48,8 @@ class Proveedor(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)  # Fecha de la última actualización
     giro = models.ForeignKey(Giro, on_delete=models.SET_NULL, null=True)  # Relación con el modelo Giro
     logo = models.ImageField(upload_to='static/images/proveedores/logos/', blank=True, null=True)
+    latitud = models.FloatField(null=True, blank=True, verbose_name="Latitud")
+    longitud = models.FloatField(null=True, blank=True, verbose_name="Longitud")
 
 
     def __str__(self):
@@ -56,27 +61,83 @@ class Proveedor(models.Model):
         db_table = "proveedor"
 
 class Pedido(models.Model):
-    
-    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)  # Relación con el proveedor
-    fecha_pedido = models.DateTimeField(auto_now_add=True)  # Fecha en que se realizó el pedido
-    total = models.DecimalField(max_digits=10, decimal_places=2)  # Total del pedido
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, default=0)
+
     ESTADO_CHOICES = [
-        ('Pendiente', 'Pendiente'),  # El pedido está pendiente de ser procesado
-        ('En Proceso', 'En Proceso'),  # El pedido está siendo procesado
-        ('Completado', 'Completado'),  # El pedido ha sido completado
-        ('Cancelado', 'Cancelado'),  # El pedido ha sido cancelado
-        ('Devuelto', 'Devuelto'),  # El pedido ha sido devuelto
+        ('Pendiente', 'Pendiente'),
+        ('En Proceso', 'En Proceso'),
+        ('Completado', 'Completado'),
+        ('Cancelado', 'Cancelado'),
+        ('Devuelto', 'Devuelto'),
     ]
-    estado = models.CharField(max_length=50)  # Estado del pedido (ej. 'Pendiente', 'Completado')
+    
+    proveedor = models.ForeignKey('Proveedor', on_delete=models.CASCADE, related_name="pedidos")
+    fecha_creacion = models.DateTimeField(default=timezone.now)  
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    observaciones = models.TextField(null=True, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        related_name="pedidos_creados", 
+        null=True
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        related_name="pedidos_actualizados", 
+        null=True
+    )
+
+    def calcular_total(self):
+        """
+        Calcula el total del pedido basado en los DetallePedido asociados.
+        """
+        self.total = sum(
+            detalle.subtotal for detalle in self.detalles.all()
+        )
+        self.save()
 
     def __str__(self):
-        return f"Pedido {self.id} - Proveedor: {self.proveedor.nombre} - Total: {self.total}"
-    
+        return f"Pedido {self.id} - {self.proveedor.nombre} - {self.estado}"
+
     class Meta:
-        db_table = 'pedido'  # Nombre de la tabla en la base de datos
-        ordering = ['fecha_pedido']  # Ordenar por fecha de pedido de forma ascendente
+        db_table = "pedido"
         verbose_name = "Pedido"
         verbose_name_plural = "Pedidos"
-        indexes = [
-            models.Index(fields=['fecha_pedido'], name='fecha_pedido_idx'),  # Índice en el campo fecha_pedido
-        ]
+        ordering = ['-fecha_creacion']
+
+class Detalle_Pedido(models.Model):
+    direccion_entrega = models.ForeignKey(
+        'Inventario.Bodega', 
+        on_delete=models.CASCADE, 
+        related_name="detalles",
+        default=1
+    )
+    fecha_creacion = models.DateTimeField(default=timezone.now) 
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, default=0)
+    pedido = models.ForeignKey(
+        Pedido, 
+        on_delete=models.CASCADE, 
+        related_name="detalles"
+    )
+    producto = models.ForeignKey(
+        'Inventario.Producto', 
+        on_delete=models.CASCADE, 
+        related_name="detalles_pedido"
+    )
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
+
+    def __str__(self):
+        return f"{self.cantidad} x {self.producto.nombre} (Pedido {self.pedido.id})"
+
+    class Meta:
+        db_table = "detalle_pedido"
+        verbose_name = "Detalle de Pedido"
+        verbose_name_plural = "Detalles de Pedido"

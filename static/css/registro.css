@@ -8,88 +8,92 @@
 
 body {
     font-family: 'IBM Plex Mono', monospace;
+    background-color: #2c2c2c; /* Fondo oscuro general */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px; /* Evita que el contenido toque los bordes */
 }
 
 .container {
-    display: flex;
-    height: 100vh;
-}
-
-.left-section {
-    flex: 1;
-    background-image: url('/static/images/registro_img.jpg'); /* Ruta relativa al directorio estático */
-    background-size: cover;
-    background-position: center;
-}
-
-.right-section {
-    flex: 1;
-    background-color: #222;
-    color: white;
+    background-color: #353535; /* Fondo del formulario */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5); /* Sombra alrededor */
+    padding: 40px;
+    width: 100%;
+    max-width: 500px; /* Ancho máximo */
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px;
+    align-items: stretch;
+    color: #fff;
 }
 
 h1 {
-    font-size: 32px;
-    margin-bottom: 40px; /* Aumenta la distancia entre el título y los elementos del registro */
+    font-size: 28px;
+    margin-bottom: 20px; /* Distancia entre el título y el formulario */
     text-align: center; /* Centrar el título */
     font-weight: 600; /* Semi-bold solo para el título */
 }
 
 form {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Elementos en columna */
 }
 
 .form-row {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 25px; /* Aumenta la distancia entre los inputs */
+    flex-direction: column; /* Cambiar a diseño vertical */
+    margin-bottom: 15px; /* Espaciado entre filas */
 }
 
 input, select {
-    width: 48%;
-    padding: 15px;
-    margin-bottom: 20px; /* Más margen entre los elementos */
-    background-color: #333;
+    width: 100%; /* Ocupar todo el ancho */
+    padding: 12px;
+    margin-bottom: 15px; /* Más margen entre los inputs */
+    background-color: #4c4c4c; /* Fondo oscuro para los campos */
     border: none;
     border-radius: 8px;
     color: white;
     font-weight: 500; /* Semi-bold para los inputs */
+    font-size: 14px;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+    color: #bbb; /* Color de texto del placeholder */
 }
 
 input[type="checkbox"] {
-    width: auto;
+    width: auto; /* Ajustar tamaño del checkbox */
+    margin-right: 10px;
 }
 
 button {
     width: 100%;
     padding: 15px;
-    background-color: #555;
+    background-color: #007BFF; /* Azul predeterminado */
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 500; /* Semi-bold para los botones */
     cursor: pointer;
-    margin-top: 20px; /* Más espacio entre el último input y el botón */
+    margin-top: 10px; /* Más espacio entre el último input y el botón */
 }
 
 button:hover {
-    background-color: #777;
+    background-color: #0056b3; /* Azul más oscuro al pasar el cursor */
 }
 
 .terms {
     display: flex;
     align-items: center;
-    margin-bottom: 30px; /* Aumenta la distancia entre términos y el botón */
-}
-
-.terms label {
-    margin-left: 10px;
+    margin-bottom: 20px; /* Espaciado entre términos y el botón */
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .terms a {
@@ -97,16 +101,21 @@ button:hover {
     text-decoration: none;
 }
 
+.terms a:hover {
+    text-decoration: underline;
+}
+
 .social-login {
     display: flex;
-    justify-content: space-between;
-    margin-top: 30px; /* Más espacio encima de los botones sociales */
+    flex-direction: column; /* Botones uno debajo del otro */
+    gap: 10px; /* Espaciado entre botones sociales */
+    margin-top: 20px;
 }
 
 .social-login button {
-    width: 48%;
-    padding: 15px;
-    background-color: #333;
+    width: 100%; /* Botones sociales del mismo ancho */
+    padding: 12px;
+    background-color: #333; /* Fondo oscuro para botones sociales */
     color: white;
     border: none;
     border-radius: 8px;
@@ -116,13 +125,13 @@ button:hover {
 }
 
 .social-login button.google {
-    background-color: #DB4437;
+    background-color: #DB4437; /* Rojo para Google */
 }
 
 .social-login button.apple {
-    background-color: #000;
+    background-color: #000; /* Negro para Apple */
 }
 
 .social-login button:hover {
-    opacity: 0.8;
+    opacity: 0.9; /* Transparencia ligera al pasar el cursor */
 }

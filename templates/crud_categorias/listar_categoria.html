@@ -29,7 +29,6 @@
                         <th scope="col">Id</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Descripción</th>
-                        <th scope="col">Imagen</th>
                         <th scope="col">Fecha de Creación</th>
                         <th scope="col">Acciones</th>
                     </tr>
@@ -40,13 +39,6 @@
                         <td>{{ c.id }}</td>
                         <td>{{ c.nombre }}</td>
                         <td>{{ c.descripcion }}</td>
-                        <td>
-                            {% if c.img %}
-                            <img src="{{ c.img.url }}" alt="Imagen de {{ c.nombre }}" style="width: 100px; height: auto;">
-                            {% else %}
-                            <span>No hay imagen</span>
-                            {% endif %}
-                        </td>
                         <td>{{ c.fecha_creacion|date:"d/m/Y" }}</td>    
                         <td>
                             <button class="btn btn-warning" onclick="window.location.href='/modificarCategoria/{{ c.id }}'">
@@ -74,13 +66,6 @@
                     <h5 class="card-title">Categoría ID: {{ c.id }}</h5>
                     <p><strong>Nombre:</strong> {{ c.nombre }}</p>
                     <p><strong>Descripción:</strong> {{ c.descripcion }}</p>
-                    <p><strong>Imagen:</strong> 
-                        {% if c.img %}
-                        <img src="{{ c.img.url }}" alt="Imagen de {{ c.nombre }}" style="width: 100px; height: auto;">
-                        {% else %}
-                        <span>No hay imagen</span>
-                        {% endif %}
-                    </p>
                     <p><strong>Fecha de Creación:</strong> {{ c.fecha_creacion|date:"d/m/Y" }}</p>
                 </div>
             </div>

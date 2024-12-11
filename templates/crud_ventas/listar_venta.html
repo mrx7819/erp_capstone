@@ -33,7 +33,6 @@
                         <th>Método de Pago</th>
                         <th>Estado</th>
                         <th>Fecha Creación</th>
-                        <th>IVA</th>
                         <th>Total Venta</th>
                         <th>Acciones</th>
                     </tr>
@@ -46,7 +45,6 @@
                         <td>{{ v.metodo_pago }}</td>
                         <td>{{ v.estado }}</td>
                         <td>{{ v.fecha_creacion|date:"d-m-Y H:i" }}</td>
-                        <td>%{{ v.impuesto|floatformat:1|intcomma }}</td>
                         <td>${{ v.total_venta_calculado|floatformat:2|intcomma }}</td>
                         <td class="d-flex justify-content-between">
                             <button class="btn btn-warning btn-sm" onclick="window.location.href='/modificarVenta/{{ v.id }}'">

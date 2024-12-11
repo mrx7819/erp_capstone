@@ -10,8 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Panel | MRX ERP</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+    <title>Panel | Horus ERP</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    
     <!-- Bootstrap -->
     <link href="{% static '/FrWork/admin_lte/vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Font Awesome -->
@@ -27,11 +30,15 @@
     <link href="{% static '/FrWork/admin_lte/vendors/jqvmap/dist/jqvmap.min.css' %}" rel="stylesheet"/>
     <!-- bootstrap-daterangepicker -->
     <link href="{% static '/FrWork/admin_lte/vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
-    <link rel="icon" href="{% static '/images/logo.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'images/TECNOLO.png' %}" type="image/png">
+    
     <!-- Custom Theme Style -->
     <link href="{% static '/FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
     <link href="{% static 'css/logout.css' %}" rel="stylesheet">
     <link href="{% static 'css/cliente.css' %}" rel="stylesheet">
+    <link href="{% static 'css/black-dashboard.css' %}" rel="stylesheet">
+
+
   </head>
 
   <body class="nav-md">
@@ -41,7 +48,6 @@
     <div class="container body">
       <div class="main_container">
         <div class="col-md-3 left_col menu_fixed">
-
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
               <a href="{% url 'index' %}" class="site_title"><span>Panel de control</span></a>
@@ -100,8 +106,8 @@
                   <li>
                     <a><i class="fa fa-cart-shopping"></i> Compras <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="#"><i class="fa fa-eye"></i> Ver</a></li>
-                      <li><a href="#"><i class="fa fa-plus"></i> Agregar</a></li>
+                      <li><a href="{% url 'listarPedido' %}"><i class="fa fa-eye"></i> Ver</a></li>
+                      <li><a href="/agregarPedido/0"><i class="fa fa-plus"></i> Agregar</a></li>
                       <li><a href="#"><i class="fa fa-refresh"></i> Modificar</a></li>
                       <li><a href="#"><i class="fa fa-trash"></i> Eliminar</a></li>
                     </ul>
@@ -133,6 +139,18 @@
                       <li><a href="/eliminarBodega/0"><i class="fa fa-trash"></i> Eliminar</a></li>
                     </ul>
                   </li>
+                  <li>
+                    <a><i class="fa-solid fa-chart-simple"></i> Reportes <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{% url 'ver_reporte' %}"><i class="fa fa-eye"></i> Ver Reportes</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a><i class="fa-solid fa-newspaper"></i> Manual <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="#"><i class="fa fa-eye"></i> Ver Manual</a></li>
+                    </ul>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -143,10 +161,11 @@
               <form method="post" action="{% url 'logout' %}">
                   {% csrf_token %}
                   <button type="submit" class="btn-logout-35">
-                    <i class="fa fa-sign-out-alt"></i> <!-- Ícono de logout -->
+                      <i class="fa fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
                   </button>
               </form>
-            </div>
+          </div>
+          
             <!-- /menu footer buttons -->
           </div>
         </div>
@@ -239,6 +258,10 @@
     <!-- Custom Theme Scripts -->
     <script src="{% static '/FrWork/admin_lte/build/js/custom.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    
+    <!-- Mapa-->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script>
+      
+    </script>
   </body>
 </html>

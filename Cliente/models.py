@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import datetime
-
+from django.conf import settings
 class Cliente(models.Model):
     rut = models.CharField(
         max_length=9,  # Ajusta el max_length si es necesario
@@ -27,7 +27,7 @@ class Cliente(models.Model):
         ('O', 'Otro'),
     ]
     genero = models.CharField(max_length=10, choices=GENERO_CHOICES)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='clientes', null=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
     
     def clean(self):
         # Validar que la fecha de nacimiento sea realista

@@ -1,115 +1,94 @@
 {% extends '../index_master.html' %}
 {% load static %}
 {% load humanize %}
-<link href="{% static 'FrWork/admin_lte/build/css/custom.css' %}" rel="stylesheet">
 {% block content %}
 <div class="right_col" role="main">
-    <div class="container mt-5">
-        <h1 class="text-center mb-4" style="font-size: 1.5rem;">Productos</h1>
-        
-        <!-- Sección de búsqueda y agregar producto -->
-        <div class="mb-3">
-            <div class="d-flex flex-column flex-md-row align-items-start justify-content-center">
-                <div class="input-group mb-2 mb-md-0" style="max-width: 300px; margin-right: 7px;">
-                    <input type="text" class="form-control" placeholder="Buscar productos" aria-label="Buscar producto">
-                </div>
-                <button class="btn btn-dark mb-2 mb-md-0 me-md-2 btn-sm" type="button" id="button-search">
-                    <i class="fa fa-search"></i>
-                </button>
-                <a href="{% url 'agregarProducto' %}" class="btn btn-success btn-sm">
-                    <i class="fa fa-plus"></i> Agregar Producto
-                </a>
+    <div class="table">
+        <section class="table__header">
+            <h1>Productos</h1>
+            <div class="input-group">
+                <input type="search" placeholder="Buscar productos..." oninput="searchTable()">
             </div>
-        </div>
+            <a href="{% url 'agregarProducto' %}" class="btn btn-success mb-3">
+                <i class="fa fa-plus"></i> Agregar Producto
+            </a>
+        </section>
 
-        <!-- Tabla de productos (para dispositivos de escritorio) -->
-        <div class="table-responsive d-none d-md-block">
-            <table class="table table-striped table-bordered table-sm text-sm" style="font-size: 0.85rem; line-height: 1.2;">
-                <thead class="thead-dark">
+        <section class="table__body">
+            <table>
+                <thead>
                     <tr>
-                        <th scope="col" style="padding: 6px;">SKU</th>
-                        <th scope="col" style="padding: 6px;">Nombre</th>
-                        <th scope="col" style="padding: 6px;">Descripción</th>
-                        <th scope="col" style="padding: 6px;">Categoría</th>
-                        <th scope="col" style="padding: 6px;">Proveedor</th>
-                        <th scope="col" style="padding: 6px;">Precio Compra</th>
-                        <th scope="col" style="padding: 6px;">Precio Venta</th>
-                        <th scope="col" style="padding: 6px;">Porcentaje Ganancia (%)</th>
-                        <th scope="col" style="padding: 6px;">Cantidad</th>
-                        <th scope="col" style="padding: 6px;">Fecha Creación</th>
-                        <th scope="col" style="padding: 6px;">Bodega</th>
-                        <th scope="col" style="padding: 6px;">Imagen</th>
-                        <th scope="col" style="padding: 6px;">Acciones</th>
+                        <th>SKU</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Proveedor</th>
+                        <th>Precio Compra</th>
+                        <th>Precio Venta</th>
+                        <th>Cantidad</th>
+                        <th>Stock</th>
+                        <th>Bodega</th>
+                        <th>Imagen</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in productos %}
                     <tr>
-                        <td style="padding: 6px;">{{ p.sku }}</td>
-                        <td style="padding: 6px;">{{ p.nombre }}</td>
-                        <td style="padding: 6px;">{{ p.descripcion }}</td>
-                        <td style="padding: 6px;">{{ p.categoria.nombre }}</td>
-                        <td style="padding: 6px;">{{ p.proveedor.nombre }}</td>
-                        <td style="padding: 6px;">${{ p.precio_compra|floatformat:0|intcomma }}</td>
-                        <td style="padding: 6px;">${{ p.precio_venta|floatformat:0|intcomma }}</td>
-                        <td style="padding: 6px;">%{{ p.porc_ganancias }}</td>
-                        <td style="padding: 6px;">{{ p.cantidad }}</td>
-                        <td style="padding: 6px;">{{ p.fecha_creacion|date:"d-m-Y H:i" }}</td>
-                        <td style="padding: 6px;">{{ p.bodega.nombre }}</td>
-                        <td style="padding: 6px;">
-                            {% if p.img %}
-                            <img src="{{ p.img.url }}" alt="Imagen de {{ p.nombre }}" style="width: 70px; height: auto;">
+                        <td data-label="SKU">{{ p.sku }}</td>
+                        <td data-label="Nombre">{{ p.nombre }}</td>
+                        <td data-label="Categoría">{{ p.categoria.nombre }}</td>
+                        <td data-label="Proveedor">{{ p.proveedor.nombre }}</td>
+                        <td data-label="Precio Compra">${{ p.precio_compra|floatformat:0|intcomma }}</td>
+                        <td data-label="Precio Venta">${{ p.precio_venta|floatformat:0|intcomma }}</td>
+                        <td data-label="Cantidad">{{ p.cantidad }}</td>
+                        <td data-label="Stock">
+                            {% if p.cantidad > 15 %}
+                            <p class="status delivered">Disponible</p>
                             {% else %}
-                            <span>No hay imagen</span>
+                            <p class="status out-of-stock">Sin stock</p>
                             {% endif %}
-                        </td>   
-                        <td style="padding: 6px;" class="d-flex justify-content-between">
-                            <button class="btn btn-warning btn-sm" onclick="window.location.href='/modificarProducto/{{ p.id }}'">
-                                <i class="fa fa-refresh"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="window.location.href='/eliminarProducto/{{ p.id }}'">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </td>                                  
+                        </td>
+                        <td data-label="Bodega">{{ p.bodega.nombre }}</td>
+                        <td data-label="Imagen">
+                            {% if p.img %}
+                            <img src="{{ p.img.url }}" alt="{{ p.nombre }}">
+                            {% else %}
+                            <span>No imagen</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Acciones">
+                            <div class="action-buttons">
+                                <button class="btn btn-warning btn-sm" onclick="window.location.href='/modificarProducto/{{ p.id }}'">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="window.location.href='/eliminarProducto/{{ p.id }}'">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="13" class="text-center">No hay productos disponibles.</td>
+                        <td colspan="11" class="text-center">No hay productos disponibles.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-        <!-- Vista de tarjetas para dispositivos móviles -->
-        <div class="d-md-none">
-            {% for p in productos %}
-            <div class="card mb-3 text-sm" style="font-size: 0.85rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Producto SKU: {{ p.sku }}</h5>
-                    <p><strong>Nombre:</strong> {{ p.nombre }}</p>
-                    <p><strong>Descripción:</strong> {{ p.descripcion }}</p>
-                    <p><strong>Categoría:</strong> {{ p.categoria.nombre }}</p>
-                    <p><strong>Proveedor:</strong> {{ p.proveedor.nombre }}</p>
-                    <p><strong>Precio Compra:</strong> ${{ p.precio_compra|floatformat:0 }}</p>
-                    <p><strong>Precio Venta:</strong> ${{ p.precio_venta|floatformat:0 }}</p>
-                    <p><strong>Porcentaje Ganancia (%):</strong>%{{ p.porc_ganancias }}</p>
-                    <p><strong>Cantidad:</strong> {{ p.cantidad }}</p>
-                    <p><strong>Fecha Creación:</strong> {{ p.fecha_creacion|date:"d-m-Y H:i" }}</p>
-                    <p><strong>Bodega:</strong> {{ p.bodega.nombre }}</p>
-                    <p><strong>Imagen:</strong> 
-                        {% if p.img %}
-                        <img src="{{ p.img.url }}" alt="Imagen de {{ p.nombre }}" style="width: 70px; height: auto;">
-                        {% else %}
-                        <span>No hay imagen</span>
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-            {% empty %}
-            <div class="alert alert-warning" role="alert">No hay productos disponibles.</div>
-            {% endfor %}
-        </div>
+        </section>
     </div>
+
+    <script>
+        // Búsqueda en la tabla
+        function searchTable() {
+            const input = document.querySelector('.input-group input');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+    </script>
 </div>
 {% endblock %}

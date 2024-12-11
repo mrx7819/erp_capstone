@@ -40,7 +40,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'widget_tweaks',
+    #MODULO USER
+    'User',
+    #MODULO HOME
     'Home',
+    
     #MODULO CLIENTES
     'Cliente',
     #MODULO VENTAS
@@ -148,9 +152,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'es-es'
+LANGUAGE_CODE = 'es-cl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -165,3 +169,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
 
+AUTH_USER_MODEL = 'User.CustomUser'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mrxaprendeaturitmo@gmail.com'
+EMAIL_HOST_PASSWORD = 'mjpszgbhoxkoeufn'  # Contraseña de aplicación generada (sin espacios)

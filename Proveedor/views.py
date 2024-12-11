@@ -10,6 +10,8 @@ import json
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
+from Inventario.models import Producto, Bodega
+from django.db import transaction
 
 def upload_logo(request):
     if request.method == 'POST' and request.FILES.get('logo'):
@@ -75,8 +77,7 @@ def agregarProveedor(request):
             request.POST.get('comuna') and
             request.POST.get('provincia') and
             request.POST.get('region') and
-            request.POST.get('giro') and
-            request.FILES.get('logo')
+            request.POST.get('giro')
         ):
             proveedor = Proveedor()
             proveedor.rut = request.POST.get('rut')
@@ -88,12 +89,16 @@ def agregarProveedor(request):
             proveedor.provincia_id = request.POST.get('provincia')
             proveedor.region_id = request.POST.get('region')
             proveedor.giro_id = request.POST.get('giro')
-            proveedor.logo = request.FILES.get('logo')
+
+            # Logo opcional
+            if request.FILES.get('logo'):
+                proveedor.logo = request.FILES.get('logo')
+
             proveedor.user = request.user
             proveedor.save()
             return redirect('listarProveedor')
         else:
-            # Si no se completaron todos los campos, podrías mostrar un mensaje de error
+            # Si no se completaron todos los campos requeridos, mostrar mensaje de error
             return render(request, 'crud_proveedores/agregar_proveedor.html')
     else:
         # Pasamos las comunas, regiones y giros disponibles al formulario
@@ -107,6 +112,7 @@ def agregarProveedor(request):
             'provincias': provincias,
             'giros': giros
         })
+
 
 
 
@@ -207,8 +213,15 @@ def eliminarProveedor(request, idProveedor):
         if request.method == 'POST':
             if request.POST.get('id'):
                 id_a_borrar = request.POST.get('id')
-                tupla = Proveedor.objects.get(id=id_a_borrar)
-                tupla.delete()
+                proveedor = Proveedor.objects.get(id=id_a_borrar)
+                
+                # Eliminar productos relacionados
+                productos_relacionados = Producto.objects.filter(proveedor=proveedor)
+                productos_relacionados.delete()
+                
+                # Eliminar el proveedor
+                proveedor.delete()
+                
                 return redirect('listarProveedor')
 
         proveedores = Proveedor.objects.all()
@@ -221,6 +234,7 @@ def eliminarProveedor(request, idProveedor):
         proveedor = None
         datos = {'proveedores': proveedores, 'proveedor': proveedor}
         return render(request, "crud_proveedores/eliminar_proveedor.html", datos)
+
 
 
 @login_required
@@ -253,3 +267,168 @@ def buscar_proveedores(request):
 def get_giros(request):
     giros = Giro.objects.all().values('id','codigo', 'nombre')  # Obtén los giros desde la base de datos
     return JsonResponse(list(giros), safe=False)  # Devuelve los giros como JSON
+
+############################################################################ Pedidos ############################################################################
+@login_required
+def get_product_price(request, product_id):
+    try:
+        producto = get_object_or_404(Producto, id=product_id, user=request.user)
+        return JsonResponse({'success': True, 'precio': float(producto.precio_compra)})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+@login_required
+def listarPedido(request):
+    # Prefetch los detalles para optimizar la consulta
+    pedidos = Pedido.objects.filter(user=request.user).prefetch_related('detalles__producto')
+
+    # Calcular el total del pedido sumando los subtotales de los detalles
+    for pedido in pedidos:
+        pedido.total_calculado = sum(detalle.subtotal for detalle in pedido.detalles.all())
+
+    return render(request, 'crud_pedidos/listar_pedido.html', {'pedidos': pedidos})
+
+
+@login_required
+def agregarPedido(request, proveedor_id=None):
+    try:
+        # Obtener el proveedor seleccionado si se proporciona el `proveedor_id`
+        proveedor_seleccionado = None
+        if proveedor_id:
+            proveedor_seleccionado = get_object_or_404(Proveedor, id=proveedor_id, user=request.user)
+
+        if request.method == 'POST':
+            print("Se recibió un POST en agregarPedido.")
+            print(f"Datos recibidos: proveedor_id={request.POST.get('proveedor')}, estado={request.POST.get('estado')}")
+
+            # Validar los campos requeridos para el Pedido
+            if all([
+                request.POST.get('proveedor'),
+                request.POST.get('estado')
+            ]):
+                try:
+                    with transaction.atomic():
+                        # Crear el Pedido
+                        pedido = Pedido.objects.create(
+                            proveedor_id=request.POST.get('proveedor'),
+                            estado=request.POST.get('estado'),
+                            observaciones=request.POST.get('observaciones', ''),
+                            created_by=request.user,
+                            updated_by=request.user,
+                            user=request.user,
+                        )
+                        print(f"Pedido guardado con ID: {pedido.id}")
+
+                        # Manejar los detalles del pedido
+                        productos = request.POST.getlist('productos[]')
+                        cantidades = request.POST.getlist('cantidades[]')
+                        precios = request.POST.getlist('precios[]')
+                        direcciones_entrega = request.POST.getlist('direcciones_entrega[]')
+
+                        for i in range(len(productos)):
+                            producto_id = int(productos[i])
+                            cantidad_pedida = int(cantidades[i])
+                            precio_unitario = float(precios[i])
+                            direccion_entrega_id = int(direcciones_entrega[i])
+
+                            # Obtener el producto
+                            producto = get_object_or_404(Producto, id=producto_id)
+
+                            # Obtener la bodega (como dirección de entrega)
+                            direccion_entrega = get_object_or_404(Bodega, id=direccion_entrega_id)
+
+                            # Actualizar la cantidad del producto
+                            producto.cantidad += cantidad_pedida
+                            producto.save()
+                            print(f"Producto '{producto.nombre}' actualizado: cantidad {producto.cantidad}")
+
+                            # Actualizar la capacidad de la bodega
+                            if direccion_entrega.capacidad >= cantidad_pedida:
+                                direccion_entrega.capacidad -= cantidad_pedida
+                                direccion_entrega.cantidad_art = (direccion_entrega.cantidad_art or 0) + cantidad_pedida
+                                direccion_entrega.save()
+                                print(f"Bodega '{direccion_entrega.nombre}' actualizada: capacidad restante {direccion_entrega.capacidad}")
+                            else:
+                                raise ValueError(f"La bodega '{direccion_entrega.nombre}' no tiene suficiente capacidad para este pedido.")
+
+                            # Crear el detalle del pedido
+                            detalle = Detalle_Pedido.objects.create(
+                                pedido=pedido,
+                                producto=producto,
+                                cantidad=cantidad_pedida,
+                                precio_unitario=precio_unitario,
+                                direccion_entrega=direccion_entrega,
+                                user=request.user,
+                            )
+                            print(f"Detalle creado: {detalle}")
+
+                        # Calcular el total del pedido
+                        pedido.calcular_total()
+                        print(f"Total del pedido calculado: {pedido.total}")
+
+                        messages.success(request, 'Pedido creado exitosamente.')
+                        return redirect('listarPedido')
+
+                except Exception as e:
+                    print(f"Error: {str(e)}")
+                    messages.error(request, f"Error al procesar el pedido: {str(e)}")
+                    return render(request, 'crud_pedidos/agregar_pedido.html', {
+                        'error': f"Error al procesar el pedido: {str(e)}",
+                        'proveedores': Proveedor.objects.filter(user=request.user),
+                        'productos': Producto.objects.filter(user=request.user),
+                        'bodegas': Bodega.objects.filter(user=request.user),
+                        'estado_choices': Pedido.ESTADO_CHOICES,
+                        'proveedor_seleccionado': proveedor_seleccionado,
+                    })
+
+            else:
+                print("Campos obligatorios faltantes.")
+                messages.error(request, "Faltan campos obligatorios para crear el pedido.")
+                return render(request, 'crud_pedidos/agregar_pedido.html', {
+                    'error': 'Faltan campos obligatorios',
+                    'proveedores': Proveedor.objects.filter(user=request.user),
+                    'productos': Producto.objects.filter(user=request.user),
+                    'bodegas': Bodega.objects.filter(user=request.user),
+                    'estado_choices': Pedido.ESTADO_CHOICES,
+                    'proveedor_seleccionado': proveedor_seleccionado,
+                })
+
+        else:
+            # Si se proporciona `proveedor_id`, filtrar productos por el proveedor seleccionado
+            productos = Producto.objects.filter(proveedor=proveedor_seleccionado, user=request.user) if proveedor_seleccionado else Producto.objects.filter(user=request.user)
+            return render(request, 'crud_pedidos/agregar_pedido.html', {
+                'proveedores': Proveedor.objects.filter(user=request.user),
+                'productos': productos,
+                'bodegas': Bodega.objects.filter(user=request.user),
+                'estado_choices': Pedido.ESTADO_CHOICES,
+                'proveedor_seleccionado': proveedor_seleccionado,
+            })
+    except Proveedor.DoesNotExist:
+        messages.error(request, 'El proveedor seleccionado no existe.')
+        return redirect('listarProveedor')
+
+
+
+
+from rest_framework.response import Response
+from rest_framework import status, viewsets
+from .models import Proveedor
+from .serializers import ProveedorSerializer
+
+class ProveedorViewSet(viewsets.ModelViewSet):
+    queryset = Proveedor.objects.all()
+    serializer_class = ProveedorSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Si el cuerpo de la solicitud es una lista
+        if isinstance(request.data, list):
+            # Procesa la lista
+            serializer = self.get_serializer(data=request.data, many=True)
+        else:
+            # Procesa un solo objeto
+            serializer = self.get_serializer(data=request.data)
+
+        # Valida los datos
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

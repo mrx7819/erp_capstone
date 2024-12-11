@@ -18,6 +18,7 @@
                         <th scope="col">Nombre</th>
                         <th scope="col">Dirección</th>
                         <th scope="col">Cantidad de Artículos</th>
+                        <th scope="col">Capacidad</th>
                         <th scope="col">Comuna</th>
                         <th scope="col">Región</th>
                         <th scope="col">Acción</th>
@@ -30,11 +31,12 @@
                         <td class="text-truncate" title="{{ b.nombre }}">{{ b.nombre }}</td>
                         <td class="text-truncate" title="{{ b.direccion }}">{{ b.direccion }}</td>
                         <td>{{ b.cantidad_art|default:0 }}</td>
+                        <td>{{ b.capacidad|default:0 }}</td>
                         <td>{{ b.comuna.nombre }}</td>
                         <td>{{ b.region.nombre }}</td>
                         <td class="text-center">
                             <div class="d-flex justify-content-around">
-                                <button class="btn btn-info btn-sm" title="Ver detalle de la bodega" onclick="window.location.href='/detalleBodega/{{ b.id }}'">
+                                <button class="btn btn-info btn-sm" title="Ver detalle de la bodega" onclick="window.location.href='/bodega/{{ b.id }}/productos/'">
                                     <i class="fa fa-eye"></i>
                                 </button>
                                 <button class="btn btn-warning btn-sm" title="Modificar la bodega" onclick="window.location.href='/modificarBodega/{{ b.id }}'">
@@ -52,6 +54,7 @@
                             <strong>Nombre completo:</strong> {{ b.nombre }}<br>
                             <strong>Dirección completa:</strong> {{ b.direccion }}<br>
                             <strong>Cantidad de Artículos:</strong> {{ b.cantidad_art|default:0 }}<br>
+                            <strong>Capacidad:</strong> {{ b.capacidad|default:0 }}<br>
                             <strong>Comuna:</strong> {{ b.comuna.nombre }}<br>
                             <strong>Región:</strong> {{ b.region.nombre }}
                         </td>
@@ -74,10 +77,11 @@
                     <p><strong>Nombre:</strong> {{ b.nombre }}</p>
                     <p><strong>Dirección:</strong> {{ b.direccion }}</p>
                     <p><strong>Cantidad de Artículos:</strong> {{ b.cantidad_art|default:0 }}</p>
+                    <p><strong>Capacidad:</strong> {{ b.capacidad|default:0 }}</p>
                     <p><strong>Comuna:</strong> {{ b.comuna.nombre }}</p>
                     <p><strong>Región:</strong> {{ b.region.nombre }}</p>
                     <div class="d-flex justify-content-center gap-2">
-                        <button class="btn btn-info btn-sm" title="Ver detalle de la bodega" onclick="window.location.href='/detalleBodega/{{ b.id }}'">
+                        <button class="btn btn-info btn-sm" title="Ver detalle de la bodega" onclick="window.location.href='/detalle_bodega/{{ b.id }}'">
                             <i class="fa fa-eye"></i>
                         </button>
                         <button class="btn btn-warning btn-sm" title="Modificar la bodega" onclick="window.location.href='/modificarBodega/{{ b.id }}'">
@@ -103,6 +107,30 @@
             nextRow.style.display = nextRow.style.display === 'none' ? 'table-row' : 'none';
         }
     }
+</script>
+
+<script>
+    form.addEventListener('submit', function (e) {
+    const bodegaId = bodegaSelect.value;
+    const cantidad = parseInt(cantidadInput.value);
+
+    if (bodegaId && cantidad) {
+        const capacidadDisponible = bodegaCapacidades[bodegaId];
+
+        if (cantidad > capacidadDisponible) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Capacidad Excedida',
+                text: `No puedes agregar más de ${capacidadDisponible} productos. Corrige la cantidad.`,
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                cantidadInput.focus();
+            });
+        }
+    }
+});
+
 </script>
 
 <style>

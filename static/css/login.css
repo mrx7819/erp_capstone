@@ -1,99 +1,113 @@
-* {
+/* Fuente principal */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500; /* Semi-bold para todo el texto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif; /* Fuente Poppins */
+    background-color: #2c2c2c; /* Fondo oscuro */
 }
 
-body {
-    font-family: 'IBM Plex Mono', monospace;
-}
-
+/* Contenedor principal */
 .container {
     display: flex;
-    height: 100vh;
+    width: 100%;
+    max-width: 1000px;
+    height: 80vh;
+    background-color: #353535;
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Asegura que el contenido no se desborde */
 }
 
+/* Sección izquierda con fondo borroso */
 .left-section {
     flex: 1;
-    background-image: url('/static/images/login_img.jpg'); /* Ruta relativa al directorio estático */
+    background-image: url('/static/images/login_img.jpg'); /* Ruta de la imagen de fondo */
     background-size: cover;
     background-position: center;
 }
 
+/* Sección derecha con contenido */
 .right-section {
     flex: 1;
-    background-color: #222;
-    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 40px;
-}
-
-h1 {
-    font-size: 32px;
-    margin-bottom: 40px; /* Más separación entre el título y el formulario */
-    text-align: center;
-    font-weight: 600; /* Semi-bold para el título */
-}
-
-form input[type="email"], form input[type="password"] {
-    width: 100%;
-    padding: 15px;
-    margin: 20px 0; 
-    background-color: #333;
-    border: 1px solid #444; /* Añadir borde */
-    border-radius: 8px;
     color: white;
-    font-weight: 500; 
-    font-size: 16px; /* Aumentar el tamaño de la fuente */
+}
+
+/* Título principal */
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600; /* Semi-bold */
+}
+
+/* Estilo del formulario */
+form {
+    display: flex;
+    flex-direction: column; /* Alinear los campos verticalmente */
+}
+
+form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background-color: #4c4c4c; /* Fondo oscuro */
+    border: 1px solid #444; /* Bordes */
+    border-radius: 8px; /* Bordes redondeados */
+    color: white;
+    font-size: 14px;
 }
 
 form input::placeholder {
-    color: #bbb; /* Color del placeholder */
+    color: #bbb; /* Color del texto placeholder */
 }
 
+/* Botón principal */
 button {
     width: 100%;
     padding: 15px;
-    background-color: #555;
+    background-color: #2b2b2b; /* Azul para el botón */
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 8px; /* Bordes redondeados */
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    margin-top: 20px; 
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #777;
+    background-color: #202020; /* Azul más oscuro al pasar el cursor */
 }
 
-
+/* Enlaces */
 a {
-    color: white; /* Cambia los enlaces a blanco */
+    color: white;
     text-decoration: none;
 }
 
 a:hover {
-    opacity: 0.8; /* Efecto hover para los enlaces */
+    text-decoration: underline;
 }
 
+/* Enlaces en el footer del formulario */
 .forgot-password, .create-account {
     text-align: center;
-    margin-top: 20px; /* Mayor separación vertical */
+    margin-top: 15px; /* Separación entre el formulario y los enlaces */
+    font-size: 14px;
 }
 
-.custom-input {
-    background-color: #333;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 15px;
-    width: 100%;
-    font-size: 16px;
-    margin-top: 10px;
+.forgot-password a, .create-account a {
+    color: #757575; /* Azul claro */
+}
+
+.forgot-password a:hover, .create-account a:hover {
+    opacity: 0.9;
 }
