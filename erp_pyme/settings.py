@@ -191,8 +191,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mrxaprendeaturitmo@gmail.com'
 EMAIL_HOST_PASSWORD = 'mjpszgbhoxkoeufn'  # Contraseña de aplicación generada (sin espacios)
-
-DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-AZURE_ACCOUNT_NAME = 'horuscapstoneblob'
-AZURE_ACCOUNT_KEY = 'DZcveeo8bjpJm5fMVBMyk6A3SlNujs9Xn+sWgD32o+DFH4o/7jN4D7/67MT8mqX76XmEtBCWiXM2+ASt9SXpOA=='
-AZURE_CONTAINER = 'django-container'
